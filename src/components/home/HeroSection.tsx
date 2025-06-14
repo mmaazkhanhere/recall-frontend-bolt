@@ -5,7 +5,7 @@ import { ArrowRight, Play } from 'lucide-react';
 
 const HeroSection: React.FC = () => {
   return (
-    <section className="relative min-h-screen flex items-center bg-background">
+    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-black dark:via-gray-900 dark:to-gray-800">
       {/* Minimalist geometric background */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Subtle grid pattern */}
@@ -22,6 +22,9 @@ const HeroSection: React.FC = () => {
         {/* Minimal accent elements */}
         <div className="absolute top-1/4 right-1/4 w-px h-32 bg-foreground opacity-10"></div>
         <div className="absolute bottom-1/3 left-1/5 w-24 h-px bg-foreground opacity-10"></div>
+        
+        {/* Subtle radial gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-black/5"></div>
       </div>
 
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 z-10">
@@ -35,7 +38,7 @@ const HeroSection: React.FC = () => {
           >
             {/* Badge */}
             <div className="mb-8">
-              <div className="inline-flex items-center rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground">
+              <div className="inline-flex items-center rounded-full border border-border bg-background/80 backdrop-blur-sm px-4 py-2 text-sm font-medium text-muted-foreground">
                 AI-Powered Video Intelligence
               </div>
             </div>
@@ -72,7 +75,7 @@ const HeroSection: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group inline-flex items-center justify-center rounded-none border border-border bg-background px-8 py-4 text-sm font-medium text-foreground transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
+                className="group inline-flex items-center justify-center rounded-none border border-border bg-background/80 backdrop-blur-sm px-8 py-4 text-sm font-medium text-foreground transition-all hover:bg-muted focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
               >
                 <Play className="mr-2 h-4 w-4" />
                 Watch Demo

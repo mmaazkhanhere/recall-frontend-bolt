@@ -59,18 +59,18 @@ const Home: React.FC = () => {
       <HeroSection />
 
       {/* Features Section */}
-      <section className="py-24 bg-background">
+      <section className="py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mx-auto max-w-2xl text-center mb-20"
+            className="mx-auto max-w-2xl text-center mb-24"
           >
-            <h2 className="text-3xl font-light text-foreground sm:text-4xl mb-4">
+            <h2 className="text-3xl font-light text-foreground sm:text-4xl mb-6">
               Powerful Features for Modern Teams
             </h2>
-            <p className="text-lg text-muted-foreground font-light">
+            <p className="text-lg text-muted-foreground font-light leading-relaxed">
               Everything you need to transform your video content into actionable knowledge
             </p>
           </motion.div>
@@ -94,23 +94,23 @@ const Home: React.FC = () => {
       <DemoVideo />
 
       {/* Stats Section */}
-      <section className="py-24 bg-foreground text-background">
+      <section className="py-32 bg-foreground text-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <h2 className="text-3xl font-light sm:text-4xl mb-4">
+            <h2 className="text-3xl font-light sm:text-4xl mb-6">
               Trusted by Teams Worldwide
             </h2>
-            <p className="text-lg text-background/70 font-light">
+            <p className="text-lg text-background/70 font-light leading-relaxed">
               Join thousands of organizations transforming their video content
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-12 md:grid-cols-4">
             {stats.map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
                 transition={{ delay: index * 0.1 }}
                 className="text-center"
               >
-                <div className="text-3xl font-light mb-2">{stat.value}</div>
+                <div className="text-3xl font-light mb-3">{stat.value}</div>
                 <div className="text-background/70 text-sm uppercase tracking-wider">{stat.label}</div>
               </motion.div>
             ))}
@@ -129,7 +129,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-background">
+      <section className="py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -137,10 +137,10 @@ const Home: React.FC = () => {
             viewport={{ once: true }}
             className="mx-auto max-w-2xl text-center"
           >
-            <h2 className="text-3xl font-light text-foreground sm:text-4xl mb-4">
+            <h2 className="text-3xl font-light text-foreground sm:text-4xl mb-6">
               Ready to Get Started?
             </h2>
-            <p className="text-lg text-muted-foreground mb-12 font-light">
+            <p className="text-lg text-muted-foreground mb-16 font-light leading-relaxed">
               Transform your video content into searchable knowledge bases in minutes
             </p>
             <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-6 sm:space-y-0">
