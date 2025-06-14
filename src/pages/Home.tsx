@@ -6,7 +6,7 @@ import {
   Play, 
   Brain, 
   Zap, 
-  Shield
+  Eye
 } from 'lucide-react';
 import HeroSection from '../components/home/HeroSection';
 import FeatureCard from '../components/home/FeatureCard';
@@ -39,15 +39,15 @@ const features = [
     description: 'Search through hours of content in milliseconds with our optimized indexing technology.'
   },
   {
-    icon: Shield,
-    title: 'Enterprise Security',
-    description: 'Your content is protected with enterprise-grade security and privacy controls.'
+    icon: Eye,
+    title: 'Context Awareness',
+    description: 'Our system connects spoken content to on-screen visuals for comprehensive understanding.'
   }
 ];
 
 const stats = [
-  { label: 'Active Users', value: '50K+' },
-  { label: 'Videos Processed', value: '1M+' },
+  { label: 'Processing Time', value: '8 hours+' },
+  { label: 'Search Accuracy', value: '95%' },
   { label: 'Search Queries', value: '10M+' },
   { label: 'Time Saved', value: '100K hrs' }
 ];
@@ -159,7 +159,7 @@ const Home: React.FC = () => {
                 Schedule Demo
               </motion.button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
