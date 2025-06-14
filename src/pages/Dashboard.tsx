@@ -38,22 +38,11 @@ const Dashboard: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Knowledge Bases</h1>
-            <p className="text-muted-foreground">
-              Manage and explore your video knowledge bases
-            </p>
-          </div>
-          
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Create New</span>
-          </motion.button>
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Knowledge Bases</h1>
+          <p className="text-muted-foreground">
+            Manage and explore your video knowledge bases
+          </p>
         </div>
       </motion.div>
 
@@ -105,17 +94,9 @@ const Dashboard: React.FC = () => {
             <Filter className="h-8 w-8 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">No knowledge bases found</h3>
-          <p className="text-muted-foreground mb-6">
-            {filters.query ? 'Try adjusting your search terms' : 'Create your first knowledge base to get started'}
+          <p className="text-muted-foreground">
+            {filters.query ? 'Try adjusting your search terms' : 'No knowledge bases available'}
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center space-x-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Create Knowledge Base</span>
-          </motion.button>
         </motion.div>
       )}
     </div>
