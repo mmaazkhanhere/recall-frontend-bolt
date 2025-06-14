@@ -159,7 +159,7 @@ const Home: React.FC = () => {
                 Schedule Demo
               </motion.button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>
