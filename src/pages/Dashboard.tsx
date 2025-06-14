@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Filter, Grid, List } from 'lucide-react';
+import { Plus, Filter } from 'lucide-react';
 import { useKnowledgeBases } from '../hooks/useKnowledgeBase';
 import { SearchFilters } from '../types';
 import KnowledgeBaseCard from '../components/dashboard/KnowledgeBaseCard';
 import SearchBar from '../components/dashboard/SearchBar';
-import SortingControls from '../components/dashboard/SortingControls';
-
-type ViewMode = 'grid' | 'list';
-type SortOption = 'title' | 'date' | 'duration' | 'videos';
-type SortOrder = 'asc' | 'desc';
 
 const Dashboard: React.FC = () => {
   const [filters, setFilters] = useState<SearchFilters>({
@@ -18,9 +13,6 @@ const Dashboard: React.FC = () => {
     dateRange: {},
     duration: {}
   });
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [sortBy, setSortBy] = useState<SortOption>('date');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: knowledgeBases, isLoading, error } = useKnowledgeBases(filters);
@@ -28,36 +20,6 @@ const Dashboard: React.FC = () => {
   const handleSearch = (query: string) => {
     setFilters(prev => ({ ...prev, query }));
   };
-
-  const handleSortChange = (newSortBy: SortOption, newSortOrder: SortOrder) => {
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-  };
-
-  const sortedKnowledgeBases = React.useMemo(() => {
-    if (!knowledgeBases) return [];
-    
-    return [...knowledgeBases].sort((a, b) => {
-      let comparison = 0;
-      
-      switch (sortBy) {
-        case 'title':
-          comparison = a.title.localeCompare(b.title);
-          break;
-        case 'date':
-          comparison = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
-          break;
-        case 'duration':
-          comparison = a.totalDuration - b.totalDuration;
-          break;
-        case 'videos':
-          comparison = a.videoCount - b.videoCount;
-          break;
-      }
-      
-      return sortOrder === 'asc' ? comparison : -comparison;
-    });
-  }, [knowledgeBases, sortBy, sortOrder]);
 
   if (error) {
     return (
@@ -95,52 +57,13 @@ const Dashboard: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* Search and Controls */}
-      <div className="mb-8 space-y-4">
+      {/* Search */}
+      <div className="mb-8">
         <SearchBar
           onSearch={handleSearch}
           onFilterToggle={() => setShowFilters(!showFilters)}
           placeholder="Search knowledge bases..."
         />
-        
-        <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-          <SortingControls
-            sortBy={sortBy}
-            sortOrder={sortOrder}
-            onSortChange={handleSortChange}
-          />
-          
-          {/* View Mode Toggle */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium text-muted-foreground">View:</span>
-            <div className="flex rounded-lg border">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setViewMode('grid')}
-                className={`flex items-center justify-center rounded-l-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  viewMode === 'grid'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                }`}
-              >
-                <Grid className="h-4 w-4" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setViewMode('list')}
-                className={`flex items-center justify-center rounded-r-lg px-3 py-2 text-sm font-medium transition-colors ${
-                  viewMode === 'list'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                }`}
-              >
-                <List className="h-4 w-4" />
-              </motion.button>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Loading State */}
@@ -159,12 +82,9 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Knowledge Bases Grid */}
-      {!isLoading && sortedKnowledgeBases && (
-        <div className={viewMode === 'grid' 
-          ? "grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" 
-          : "space-y-4"
-        }>
-          {sortedKnowledgeBases.map((kb, index) => (
+      {!isLoading && knowledgeBases && (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {knowledgeBases.map((kb, index) => (
             <KnowledgeBaseCard
               key={kb.id}
               knowledgeBase={kb}
@@ -175,7 +95,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Empty State */}
-      {!isLoading && sortedKnowledgeBases?.length === 0 && (
+      {!isLoading && knowledgeBases?.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
