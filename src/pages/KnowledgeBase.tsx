@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, Share2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useKnowledgeBase } from '../hooks/useKnowledgeBase';
 import { useChat } from '../hooks/useChat';
@@ -75,47 +75,10 @@ const KnowledgeBase: React.FC = () => {
           </Link>
         </div>
         
-        <div className="flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              {knowledgeBase.title}
-            </h1>
-            <p className="text-muted-foreground mb-4">
-              {knowledgeBase.description}
-            </p>
-            
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {knowledgeBase.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded-full bg-secondary/20 px-3 py-1 text-sm font-medium text-secondary-foreground"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center space-x-2 rounded-lg border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-            >
-              <Download className="h-4 w-4" />
-              <span>Export</span>
-            </motion.button>
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center space-x-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              <Share2 className="h-4 w-4" />
-              <span>Share</span>
-            </motion.button>
-          </div>
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">
+            {knowledgeBase.title}
+          </h1>
         </div>
       </motion.div>
 
@@ -133,17 +96,6 @@ const KnowledgeBase: React.FC = () => {
             title={currentVideo.title}
             onTimeUpdate={handleTimestampClick}
           />
-          
-          {/* Video Info */}
-          <div className="mt-4 rounded-lg border bg-card p-4">
-            <h3 className="text-lg font-semibold text-card-foreground mb-2">
-              {currentVideo.title}
-            </h3>
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>Duration: {Math.floor(currentVideo.duration / 60)}:{(currentVideo.duration % 60).toString().padStart(2, '0')}</span>
-              <span>{knowledgeBase.videoCount} videos in this knowledge base</span>
-            </div>
-          </div>
         </motion.div>
 
         {/* Chat Interface */}
