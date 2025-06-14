@@ -6,14 +6,14 @@ const DemoVideo: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <section className="py-20">
+    <section className="py-24 bg-muted/20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-4 text-3xl font-bold text-foreground sm:text-4xl"
+            className="mb-4 text-3xl font-light text-foreground sm:text-4xl"
           >
             See VideoIndex in Action
           </motion.h2>
@@ -23,7 +23,7 @@ const DemoVideo: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="mb-12 text-lg text-muted-foreground"
+            className="mb-16 text-lg text-muted-foreground font-light"
           >
             Watch how easy it is to create searchable knowledge bases from your video content
           </motion.p>
@@ -36,31 +36,28 @@ const DemoVideo: React.FC = () => {
             className="relative"
           >
             {!isPlaying ? (
-              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl">
+              <div className="group relative overflow-hidden bg-muted">
                 <img
                   src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800"
                   alt="Demo video thumbnail"
-                  className="h-64 w-full object-cover sm:h-96"
+                  className="h-64 w-full object-cover sm:h-96 transition-transform group-hover:scale-105"
                 />
                 
                 {/* Play Button Overlay */}
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-all group-hover:bg-black/50">
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20 transition-all group-hover:bg-black/30">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsPlaying(true)}
-                    className="flex h-20 w-20 items-center justify-center rounded-full bg-white/90 text-slate-900 shadow-lg backdrop-blur-sm transition-all hover:bg-white hover:shadow-xl"
+                    className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-black shadow-lg transition-all hover:shadow-xl"
                   >
-                    <Play className="ml-1 h-8 w-8" />
+                    <Play className="ml-1 h-6 w-6" />
                   </motion.button>
                 </div>
 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                
-                {/* Badge */}
-                <div className="absolute bottom-4 left-4 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">
-                  3:42 Demo
+                {/* Duration Badge */}
+                <div className="absolute bottom-4 left-4 bg-black/80 px-3 py-1 text-xs font-medium text-white">
+                  3:42
                 </div>
               </div>
             ) : (
@@ -72,7 +69,7 @@ const DemoVideo: React.FC = () => {
                   className="relative"
                 >
                   <video
-                    className="h-64 w-full rounded-2xl object-cover sm:h-96"
+                    className="h-64 w-full object-cover sm:h-96"
                     controls
                     autoPlay
                     poster="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800"
@@ -83,7 +80,7 @@ const DemoVideo: React.FC = () => {
                   
                   <button
                     onClick={() => setIsPlaying(false)}
-                    className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm hover:bg-black/70"
+                    className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center bg-black/50 text-white hover:bg-black/70"
                   >
                     <X className="h-4 w-4" />
                   </button>
