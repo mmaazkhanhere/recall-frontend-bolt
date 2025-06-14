@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Video, Moon, Sun, Menu, Search } from 'lucide-react';
+import { Video, Moon, Sun, Menu } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const Header: React.FC = () => {
@@ -21,7 +21,7 @@ const Header: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               className="flex items-center space-x-3"
             >
-              <div className="flex h-8 w-8 items-center justify-center bg-foreground">
+              <div className="flex h-8 w-8 items-center justify-center bg-foreground rounded-full">
                 <Video className="h-5 w-5 text-background" />
               </div>
               <span className="text-xl font-light text-foreground">
@@ -62,22 +62,12 @@ const Header: React.FC = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-            {/* Search */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden sm:flex h-9 w-9 items-center justify-center border border-border bg-background hover:bg-muted transition-colors"
-              aria-label="Search"
-            >
-              <Search className="h-4 w-4" />
-            </motion.button>
-
             {/* Theme Toggle */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className="flex h-9 w-9 items-center justify-center border border-border bg-background hover:bg-muted transition-colors"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors"
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
@@ -91,7 +81,7 @@ const Header: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="flex md:hidden h-9 w-9 items-center justify-center border border-border bg-background hover:bg-muted transition-colors"
+              className="flex md:hidden h-9 w-9 items-center justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors"
               aria-label="Open menu"
             >
               <Menu className="h-4 w-4" />

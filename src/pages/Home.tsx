@@ -49,7 +49,7 @@ const stats = [
   { label: 'Processing Time', value: '8 hours+' },
   { label: 'Search Accuracy', value: '95%' },
   { label: 'Search Queries', value: '10M+' },
-  { label: 'Time Saved', value: '100K hrs' }
+  { label: 'Knowledge Bases', value: '1,000+' }
 ];
 
 const Home: React.FC = () => {
@@ -149,7 +149,7 @@ const Home: React.FC = () => {
                 whileTap={{ scale: 0.98 }}
                 className="inline-flex items-center justify-center bg-foreground px-8 py-4 text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
               >
-                Start Free Trial
+                Try Out
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}

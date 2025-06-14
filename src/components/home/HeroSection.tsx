@@ -6,14 +6,14 @@ import { ArrowRight, Play } from 'lucide-react';
 const HeroSection: React.FC = () => {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Cool gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"></div>
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/20 via-transparent to-purple-900/20"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent"></div>
+      {/* Black and white gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
+      <div className="absolute inset-0 bg-gradient-to-tr from-gray-800/20 via-transparent to-gray-700/20"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-600/20 via-transparent to-transparent"></div>
       
       {/* Animated gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-purple-600/30 to-blue-600/30 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-gray-600/30 to-gray-400/30 rounded-full blur-3xl animate-pulse"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-gray-500/20 to-gray-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       
       {/* Minimalist geometric elements */}
       <div className="absolute inset-0 overflow-hidden">
@@ -52,7 +52,7 @@ const HeroSection: React.FC = () => {
             {/* Heading */}
             <h1 className="mb-8 text-5xl font-light tracking-tight text-white sm:text-7xl lg:text-8xl">
               Transform Videos Into
-              <span className="block font-normal bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <span className="block font-normal bg-gradient-to-r from-gray-300 to-white bg-clip-text text-transparent">
                 Searchable Knowledge
               </span>
             </h1>
@@ -71,7 +71,7 @@ const HeroSection: React.FC = () => {
               >
                 <Link
                   to="/dashboard"
-                  className="group inline-flex items-center justify-center rounded-lg bg-white px-8 py-4 text-sm font-medium text-slate-900 transition-all hover:bg-white/90 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-900"
+                  className="group inline-flex items-center justify-center rounded-lg bg-white px-8 py-4 text-sm font-medium text-black transition-all hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
                 >
                   <span>Get Started</span>
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -81,7 +81,7 @@ const HeroSection: React.FC = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-8 py-4 text-sm font-medium text-white transition-all hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-slate-900"
+                className="group inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-8 py-4 text-sm font-medium text-white transition-all hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
               >
                 <Play className="mr-2 h-4 w-4" />
                 Watch Demo
@@ -100,7 +100,7 @@ const HeroSection: React.FC = () => {
               { label: 'Processing Time', value: '8 hours+' },
               { label: 'Search Accuracy', value: '95%' },
               { label: 'Time Saved', value: '80%' },
-              { label: 'Languages Supported', value: '25+' },
+              { label: 'Knowledge Bases', value: '1,000+' },
             ].map((stat, index) => (
               <motion.div 
                 key={stat.label} 
@@ -109,7 +109,7 @@ const HeroSection: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
               >
-                <div className="text-2xl font-light text-white mb-1 group-hover:text-purple-300 transition-colors">
+                <div className="text-2xl font-light text-white mb-1 group-hover:text-gray-300 transition-colors">
                   {stat.value}
                 </div>
                 <div className="text-xs text-white/60 uppercase tracking-wider">
