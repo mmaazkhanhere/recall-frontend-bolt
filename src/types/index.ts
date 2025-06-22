@@ -1,13 +1,17 @@
 export interface KnowledgeBase {
+  id: number;
+  title: string;
+  tags: string[];
+  image: string;
+}
+
+export interface KnowledgeBaseResponse {
   id: string;
   title: string;
-  description: string;
-  videoCount: number;
-  totalDuration: number;
-  thumbnail: string;
-  tags: string[];
-  createdAt: string;
-  updatedAt: string;
+  tags: [string];
+  image: string;
+  video_path: string;
+  introduction: string;
 }
 
 export interface Video {
@@ -24,11 +28,11 @@ export interface Video {
 
 export interface ChatMessage {
   id: string;
-  type: 'user' | 'assistant';
+  type: "user" | "assistant";
   content: string;
   timestamp: string;
   videoTimestamp?: number;
-  feedback?: 'positive' | 'negative';
+  feedback?: "positive" | "negative";
   feedbackComment?: string;
 }
 
@@ -46,7 +50,7 @@ export interface SearchFilters {
 }
 
 export interface Theme {
-  mode: 'light' | 'dark';
+  mode: "light" | "dark";
   primaryColor: string;
   secondaryColor: string;
 }
@@ -64,7 +68,7 @@ export interface User {
 
 export interface Feedback {
   messageId: string;
-  type: 'positive' | 'negative';
+  type: "positive" | "negative";
   comment?: string;
   timestamp: string;
   userId?: string;

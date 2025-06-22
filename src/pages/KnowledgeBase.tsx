@@ -1,31 +1,39 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useKnowledgeBase } from '../hooks/useKnowledgeBase';
-import { useChat } from '../hooks/useChat';
-import VideoPlayer from '../components/kb/VideoPlayer';
-import ChatInterface from '../components/kb/ChatInterface';
-import QuestionInput from '../components/kb/QuestionInput';
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react/dist/esm/icons";
+import { Link } from "react-router-dom";
+import { useKnowledgeBase } from "../hooks/useKnowledgeBase";
+import { useChat } from "../hooks/useChat";
+import VideoPlayer from "../components/kb/VideoPlayer";
+import ChatInterface from "../components/kb/ChatInterface";
+import QuestionInput from "../components/kb/QuestionInput";
+import {
+  getPublicImageUrl,
+  getPublicVideoUrl,
+} from "../uitls/getPublicImageUrl";
 
 const KnowledgeBase: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  console.log("ID: ", id);
   const { data: knowledgeBase, isLoading, error } = useKnowledgeBase(id!);
-  const { messages, isLoading: isChatLoading, sendMessage, submitFeedback } = useChat(id);
-  const [currentVideo] = useState({
-    id: '1',
-    title: 'Introduction to Machine Learning',
-    url: '#',
-    duration: 600
-  });
+  const {
+    messages,
+    isLoading: isChatLoading,
+    sendMessage,
+    submitFeedback,
+  } = useChat(id);
 
   const handleTimestampClick = (timestamp: number) => {
     // This would normally seek the video to the specific timestamp
-    console.log('Seeking to timestamp:', timestamp);
+    console.log("Seeking to timestamp:", timestamp);
   };
 
-  const handleFeedback = (messageId: string, feedback: 'positive' | 'negative', comment?: string) => {
+  const handleFeedback = (
+    messageId: string,
+    feedback: "positive" | "negative",
+    comment?: string
+  ) => {
     submitFeedback(messageId, feedback, comment);
   };
 
@@ -44,8 +52,12 @@ const KnowledgeBase: React.FC = () => {
   if (error || !knowledgeBase) {
     return (
       <div className="container mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold text-foreground mb-4">Knowledge Base Not Found</h2>
-        <p className="text-muted-foreground mb-6">The knowledge base you're looking for doesn't exist.</p>
+        <h2 className="text-2xl font-bold text-foreground mb-4">
+          Knowledge Base Not Found
+        </h2>
+        <p className="text-muted-foreground mb-6">
+          The knowledge base you're looking for doesn't exist.
+        </p>
         <Link
           to="/dashboard"
           className="inline-flex items-center space-x-2 text-primary hover:text-primary/80"
@@ -56,6 +68,8 @@ const KnowledgeBase: React.FC = () => {
       </div>
     );
   }
+
+  console.log(`Knowledge Base: ${knowledgeBase}`);
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -74,7 +88,7 @@ const KnowledgeBase: React.FC = () => {
             <span>Back to Dashboard</span>
           </Link>
         </div>
-        
+
         <div>
           <h1 className="text-3xl font-bold text-foreground">
             {knowledgeBase.title}
@@ -92,9 +106,10 @@ const KnowledgeBase: React.FC = () => {
           className="lg:col-span-2"
         >
           <VideoPlayer
-            src={currentVideo.url}
-            title={currentVideo.title}
+            src={getPublicVideoUrl(knowledgeBase.video_path)}
+            title={knowledgeBase.title}
             onTimeUpdate={handleTimestampClick}
+            poster={getPublicImageUrl(knowledgeBase.image)}
           />
         </motion.div>
 
@@ -106,7 +121,9 @@ const KnowledgeBase: React.FC = () => {
           className="space-y-4"
         >
           <div>
-            <h3 className="text-lg font-semibold text-foreground mb-4">Ask Questions</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">
+              Ask Questions
+            </h3>
             <ChatInterface
               messages={messages}
               isLoading={isChatLoading}
@@ -114,7 +131,7 @@ const KnowledgeBase: React.FC = () => {
               onFeedback={handleFeedback}
             />
           </div>
-          
+
           <QuestionInput
             onSubmit={sendMessage}
             disabled={isChatLoading}

@@ -1,21 +1,34 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Play, Pause, Volume2, VolumeX, Maximize, Settings } from 'lucide-react';
-import { useVideoPlayer } from '../../hooks/useVideoPlayer';
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Maximize,
+  Settings,
+} from "lucide-react";
+import { useVideoPlayer } from "../../hooks/useVideoPlayer";
 
 interface VideoPlayerProps {
   src: string;
   title: string;
   onTimeUpdate?: (time: number) => void;
+  poster: string;
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, onTimeUpdate }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({
+  src,
+  title,
+  onTimeUpdate,
+  poster,
+}) => {
   const { videoRef, state, controls, handlers } = useVideoPlayer();
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   const handleSeekClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -59,11 +72,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, onTimeUpdate }) =
             >
               <div
                 className="h-full rounded-full bg-primary transition-all group-hover:h-1.5"
-                style={{ width: `${(state.currentTime / state.duration) * 100}%` }}
+                style={{
+                  width: `${(state.currentTime / state.duration) * 100}%`,
+                }}
               />
               <div
                 className="absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-primary opacity-0 transition-opacity group-hover:opacity-100"
-                style={{ left: `${(state.currentTime / state.duration) * 100}%` }}
+                style={{
+                  left: `${(state.currentTime / state.duration) * 100}%`,
+                }}
               />
             </div>
           </div>
@@ -99,14 +116,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, onTimeUpdate }) =
                     <Volume2 className="h-5 w-5" />
                   )}
                 </motion.button>
-                
+
                 <input
                   type="range"
                   min="0"
                   max="1"
                   step="0.01"
                   value={state.volume}
-                  onChange={(e) => controls.setVolume(parseFloat(e.target.value))}
+                  onChange={(e) =>
+                    controls.setVolume(parseFloat(e.target.value))
+                  }
                   className="w-20 accent-primary"
                 />
               </div>
@@ -121,7 +140,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, onTimeUpdate }) =
               {/* Playback Speed */}
               <select
                 value={state.playbackRate}
-                onChange={(e) => controls.setPlaybackRate(parseFloat(e.target.value))}
+                onChange={(e) =>
+                  controls.setPlaybackRate(parseFloat(e.target.value))
+                }
                 className="rounded bg-white/20 px-2 py-1 text-sm text-white backdrop-blur-sm"
               >
                 <option value={0.5}>0.5x</option>
@@ -157,7 +178,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ src, title, onTimeUpdate }) =
 
       {/* Title Overlay */}
       <div className="absolute left-4 top-4">
-        <h3 className="text-lg font-semibold text-white drop-shadow-lg">{title}</h3>
+        <h3 className="text-lg font-semibold text-white drop-shadow-lg">
+          {title}
+        </h3>
       </div>
     </motion.div>
   );

@@ -1,15 +1,18 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
-import { KnowledgeBase } from '../../types';
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { KnowledgeBase } from "../../types";
+import { getPublicImageUrl } from "../../uitls/getPublicImageUrl";
 
 interface KnowledgeBaseCardProps {
   knowledgeBase: KnowledgeBase;
   index: number;
 }
 
-const KnowledgeBaseCard: React.FC<KnowledgeBaseCardProps> = ({ knowledgeBase, index }) => {
+const KnowledgeBaseCard: React.FC<KnowledgeBaseCardProps> = ({
+  knowledgeBase,
+  index,
+}: KnowledgeBaseCardProps) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
@@ -32,14 +35,14 @@ const KnowledgeBaseCard: React.FC<KnowledgeBaseCardProps> = ({ knowledgeBase, in
       {/* Thumbnail */}
       <div className="relative h-64 overflow-hidden">
         <img
-          src={knowledgeBase.thumbnail}
+          src={getPublicImageUrl(knowledgeBase.image)}
           alt={knowledgeBase.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80"></div>
-        
+
         {/* Title Overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6">
           <h3 className="text-xl font-semibold text-white mb-2 line-clamp-2 transition-transform duration-300 group-hover:translate-y-[-4px]">
