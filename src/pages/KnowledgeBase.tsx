@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react/dist/esm/icons";
 import { Link } from "react-router-dom";
-import { useKnowledgeBase } from "../hooks/useKnowledgeBase";
+import { fetchKnowledgeBase } from "../hooks/useKnowledgeBase";
 import { useChat } from "../hooks/useChat";
 import VideoPlayer from "../components/kb/VideoPlayer";
 import ChatInterface from "../components/kb/ChatInterface";
@@ -16,7 +16,7 @@ import {
 const KnowledgeBase: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   console.log("ID: ", id);
-  const { data: knowledgeBase, isLoading, error } = useKnowledgeBase(id!);
+  const { data: knowledgeBase, isLoading, error } = fetchKnowledgeBase(id!);
   const {
     messages,
     isLoading: isChatLoading,

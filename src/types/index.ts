@@ -5,6 +5,16 @@ export interface KnowledgeBase {
   image: string;
 }
 
+export interface IQueryResponse {
+  knowledge_base: string;
+  query: string;
+  response: string;
+  video_path: string;
+  image_path: string[];
+  start_time: number;
+  end_time: number;
+}
+
 export interface KnowledgeBaseResponse {
   id: string;
   title: string;
@@ -27,7 +37,6 @@ export interface Video {
 }
 
 export interface ChatMessage {
-  id: string;
   type: "user" | "assistant";
   content: string;
   timestamp: string;
