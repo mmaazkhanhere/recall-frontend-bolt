@@ -11,7 +11,7 @@ import {
 import HeroSection from '../components/home/HeroSection';
 import FeatureCard from '../components/home/FeatureCard';
 import DemoVideo from '../components/home/DemoVideo';
-import DemoBookingModal from '../components/home/DemoBookingModal';
+import FeedbackModal from '../components/home/FeedbackModal';
 
 const features = [
   {
@@ -47,7 +47,7 @@ const features = [
 ];
 
 const Home: React.FC = () => {
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   return (
     <>
@@ -116,10 +116,11 @@ const Home: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsDemoModalOpen(true)}
+                  onClick={() => setIsFeedbackModalOpen(true)}
                   className="inline-flex items-center justify-center border border-border bg-background px-8 py-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2"
                 >
-                  Schedule Demo
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Share Feedback
                 </motion.button>
               </div>
             </motion.div>
@@ -127,10 +128,10 @@ const Home: React.FC = () => {
         </section>
       </div>
 
-      {/* Demo Booking Modal */}
-      <DemoBookingModal 
-        isOpen={isDemoModalOpen} 
-        onClose={() => setIsDemoModalOpen(false)} 
+      {/* Feedback Modal */}
+      <FeedbackModal 
+        isOpen={isFeedbackModalOpen} 
+        onClose={() => setIsFeedbackModalOpen(false)} 
       />
     </>
   );

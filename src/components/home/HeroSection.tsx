@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Play } from 'lucide-react';
-import DemoBookingModal from './DemoBookingModal';
+import { ArrowRight, MessageSquare } from 'lucide-react';
+import FeedbackModal from './FeedbackModal';
 
 const HeroSection: React.FC = () => {
-  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
 
   return (
     <>
@@ -85,11 +85,11 @@ const HeroSection: React.FC = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setIsDemoModalOpen(true)}
+                  onClick={() => setIsFeedbackModalOpen(true)}
                   className="group inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 backdrop-blur-sm px-8 py-4 text-sm font-medium text-white transition-all hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black"
                 >
-                  <Play className="mr-2 h-4 w-4" />
-                  Schedule Demo
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Provide Feedback
                 </motion.button>
               </div>
             </motion.div>
@@ -97,10 +97,10 @@ const HeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Demo Booking Modal */}
-      <DemoBookingModal 
-        isOpen={isDemoModalOpen} 
-        onClose={() => setIsDemoModalOpen(false)} 
+      {/* Feedback Modal */}
+      <FeedbackModal 
+        isOpen={isFeedbackModalOpen} 
+        onClose={() => setIsFeedbackModalOpen(false)} 
       />
     </>
   );
