@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react/dist/esm/icons";
@@ -17,6 +17,7 @@ const KnowledgeBase: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   console.log("ID: ", id);
   const { data: knowledgeBase, isLoading, error } = fetchKnowledgeBase(id!);
+  const videoPlayerRef = useRef<{ seekTo: (time: number) => void }>(null);
   const {
     messages,
     isLoading: isChatLoading,
@@ -25,8 +26,7 @@ const KnowledgeBase: React.FC = () => {
   } = useChat(id);
 
   const handleTimestampClick = (timestamp: number) => {
-    // This would normally seek the video to the specific timestamp
-    console.log("Seeking to timestamp:", timestamp);
+    videoPlayerRef.current?.seekTo(timestamp);
   };
 
   const handleFeedback = (
@@ -106,6 +106,7 @@ const KnowledgeBase: React.FC = () => {
           className="lg:col-span-2"
         >
           <VideoPlayer
+            ref={videoPlayerRef}
             src={getPublicVideoUrl(knowledgeBase.video_path)}
             title={knowledgeBase.title}
             onTimeUpdate={handleTimestampClick}
