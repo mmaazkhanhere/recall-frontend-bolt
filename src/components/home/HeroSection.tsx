@@ -53,11 +53,21 @@ const HeroSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Heading - Split into two lines */}
-              <h1 className="mb-8 text-5xl font-light tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl leading-tight">
-                <span className="block">Transform Videos Into</span>
-                <span className="block font-normal bg-gradient-to-r from-gray-300 to-white bg-clip-text text-transparent">
-                  Searchable Knowledge
+              {/* Heading - Split into two lines with proper gradient handling */}
+              <h1 className="mb-8 text-5xl font-light tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl">
+                <span className="block leading-tight">Transform Videos Into</span>
+                <span className="block font-normal leading-tight relative">
+                  <span 
+                    className="bg-gradient-to-r from-gray-300 to-white bg-clip-text text-transparent"
+                    style={{ 
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      paddingBottom: '0.1em',
+                      display: 'inline-block'
+                    }}
+                  >
+                    Searchable Knowledge
+                  </span>
                 </span>
               </h1>
 
