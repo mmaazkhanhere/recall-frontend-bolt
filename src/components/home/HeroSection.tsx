@@ -38,7 +38,7 @@ const HeroSection: React.FC = () => {
         </div>
 
         <div className="container relative mx-auto px-4 sm:px-6 lg:px-8 z-10">
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-5xl">
             {/* Main content */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -53,9 +53,9 @@ const HeroSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Heading */}
-              <h1 className="mb-8 text-5xl font-light tracking-tight text-white sm:text-7xl lg:text-8xl">
-                Transform Videos Into
+              {/* Heading - Split into two lines */}
+              <h1 className="mb-8 text-5xl font-light tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl leading-tight">
+                <span className="block">Transform Videos Into</span>
                 <span className="block font-normal bg-gradient-to-r from-gray-300 to-white bg-clip-text text-transparent">
                   Searchable Knowledge
                 </span>
