@@ -8,13 +8,13 @@ import {
 
 import axios from "axios";
 
-const API_BASE_URL = "http://20.120.240.103:8000";
+const API_BASE_URL = "https://api.videoindex.app/docs";
 
 export const useKnowledgeBases = (filters?: SearchFilters) => {
   return useQuery({
     queryKey: ["knowledgeBases", filters],
     queryFn: async () => {
-      const url = new URL(API_BASE_URL);
+      const url = new URL(`https://api.videoindex.app/docs/knowledge-bases`);
 
       // Add query parameters
       if (filters) {
