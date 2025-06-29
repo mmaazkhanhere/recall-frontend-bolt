@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, User, ExternalLink, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Bot, User, ThumbsUp, ThumbsDown } from "lucide-react";
 import { ChatMessage } from "../../types";
 import FeedbackModal from "./FeedbackModal";
 import { getPublicVideoUrl } from "../../uitls/getPublicImageUrl";
@@ -60,6 +60,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       }
     };
   }, [messages, isVoiceInput]);
+
+  // Auto-load video when assistant message with timestamp/video path is received
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (
+      lastMessage &&
+      lastMessage.type === "assistant" &&
+      lastMessage.videoTimestamp !== undefined &&
+      onTimestampClick
+    ) {
+      const videoPath = lastMessage.videoPath ? getPublicVideoUrl(lastMessage.videoPath) : undefined;
+      onTimestampClick(lastMessage.videoTimestamp, videoPath);
+    }
+  }, [messages, onTimestampClick]);
 
   const speakText = async (text: string) => {
     // Cancel any ongoing request
@@ -162,13 +176,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setFeedbackModal({ isOpen: false, messageId: "" });
   };
 
-  const handleTimestampClick = (message: ChatMessage) => {
-    if (message.videoTimestamp !== undefined && onTimestampClick) {
-      const videoPath = message.videoPath ? getPublicVideoUrl(message.videoPath) : undefined;
-      onTimestampClick(message.videoTimestamp, videoPath);
-    }
-  };
-
   return (
     <>
       <div className="flex h-96 flex-col overflow-hidden rounded-lg border bg-card">
@@ -225,22 +232,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
-
-                      {/* Timestamp Link */}
-                      {message.videoTimestamp !== undefined &&
-                        onTimestampClick && (
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => handleTimestampClick(message)}
-                            className="mt-2 inline-flex items-center space-x-1 rounded bg-primary/20 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/30"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            <span>
-                              Jump to {formatTime(message.videoTimestamp!)}
-                            </span>
-                          </motion.button>
-                        )}
 
                       <div className="mt-1 text-xs opacity-70">
                         {new Date(message.timestamp).toLocaleTimeString([], {
