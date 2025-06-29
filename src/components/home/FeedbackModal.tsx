@@ -13,8 +13,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     email: '',
     rating: 0,
     category: '',
-    feedback: '',
-    suggestions: ''
+    feedback: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -57,8 +56,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
         email: '',
         rating: 0,
         category: '',
-        feedback: '',
-        suggestions: ''
+        feedback: ''
       });
       onClose();
     }, 3000);
@@ -218,25 +216,9 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
                       value={formData.feedback}
                       onChange={handleInputChange}
                       required
-                      rows={4}
+                      rows={5}
                       className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-                      placeholder="Tell us about your experience with VideoIndex. What did you like? What could be improved?"
-                    />
-                  </div>
-
-                  {/* Suggestions */}
-                  <div>
-                    <label htmlFor="suggestions" className="block text-sm font-medium text-foreground mb-2">
-                      Suggestions for Improvement
-                    </label>
-                    <textarea
-                      id="suggestions"
-                      name="suggestions"
-                      value={formData.suggestions}
-                      onChange={handleInputChange}
-                      rows={3}
-                      className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
-                      placeholder="Any specific features or improvements you'd like to see?"
+                      placeholder="Tell us about your experience with VideoIndex. What did you like? What could be improved? Any specific features or improvements you'd like to see?"
                     />
                   </div>
 
