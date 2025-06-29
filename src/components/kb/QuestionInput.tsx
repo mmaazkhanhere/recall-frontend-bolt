@@ -174,7 +174,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
     const fileName = `audio.${audioBlob.type.includes('webm') ? 'webm' : 'wav'}`;
     const audioFile = new File([audioBlob], fileName, { type: audioBlob.type });
     
-    formData.append('audio', audioFile);
+    formData.append('file', audioFile);
     formData.append('model_id', 'whisper-1');
 
     try {
