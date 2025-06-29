@@ -14,6 +14,7 @@
     "e2e:headless": "cypress run"
   },
   "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.4.1",
     "@hookform/resolvers": "^3.3.2",
     "@tanstack/react-query": "^5.80.7",
     "axios": "^1.10.0",

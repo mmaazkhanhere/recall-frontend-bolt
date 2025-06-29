@@ -79,9 +79,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <AnimatePresence>
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <motion.div
-                key={message.id}
+                key={index}
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -159,7 +159,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handlePositiveFeedback(message.id)}
+                            onClick={() => handlePositiveFeedback(message.type)}
                             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                               message.feedback === "positive"
                                 ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
@@ -173,7 +173,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handleNegativeFeedback(message.id)}
+                            onClick={() => handleNegativeFeedback(message.type)}
                             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                               message.feedback === "negative"
                                 ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
