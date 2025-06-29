@@ -54,7 +54,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     )
       return;
 
-    // Only auto-play if this is a voice input session
+    // Only auto-play if this is a voice input session AND the message is new
+    console.log("Auto-playing TTS for voice input response:", lastMessage.content);
     speakText(lastMessage.content, lastMessage.id || '');
     lastSpokenMessageRef.current = lastMessage.content;
 
@@ -288,7 +289,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           onClick={() => handleTimestampClick(message.videoTimestamp!, message.videoPath)}
                           className="mt-2 inline-flex items-center space-x-1 rounded bg-primary/20 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/30"
                         >
-                          <span>Jump to answer at {formatTime(message.videoTimestamp!)}</span>
+                          <span>Jump to answer</span>
                         </motion.button>
                       )}
 
@@ -300,7 +301,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           })}
                         </div>
                         
-                        {/* Manual TTS Button for Assistant Messages (only for text input) */}
+                        {/* Manual TTS Button for Assistant Messages (only for non-voice input) */}
                         {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && !isVoiceInput && (
                           <motion.button
                             whileHover={{ scale: 1.1 }}
