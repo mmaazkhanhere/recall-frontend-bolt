@@ -23,20 +23,34 @@ export const useChat = (videoId?: string) => {
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
 
-    const response = await queryKnowledgeBase(videoId!, content);
-    const answer = response.response;
-    // Simulate AI response
+    try {
+      const response = await queryKnowledgeBase(videoId!, content);
+      const answer = response.response;
 
-    const assistantMessage: ChatMessage = {
-      type: "assistant",
-      content: answer,
-      timestamp: new Date().toISOString(),
-      videoTimestamp: response.start_time,
-    };
+      const assistantMessage: ChatMessage = {
+        type: "assistant",
+        content: answer,
+        timestamp: new Date().toISOString(),
+        videoTimestamp: response.start_time,
+        videoPath: response.video_path, // Add video path to message
+      };
 
-    setMessages((prev) => [...prev, assistantMessage]);
-    setIsLoading(false);
-  }, []);
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Error querying knowledge base:", error);
+      
+      // Add error message
+      const errorMessage: ChatMessage = {
+        type: "assistant",
+        content: "I'm sorry, I encountered an error while processing your question. Please try again.",
+        timestamp: new Date().toISOString(),
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [videoId]);
 
   const submitFeedback = useCallback(
     (

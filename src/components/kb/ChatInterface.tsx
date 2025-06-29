@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Bot, User, ExternalLink, ThumbsUp, ThumbsDown } from "lucide-react";
 import { ChatMessage } from "../../types";
 import FeedbackModal from "./FeedbackModal";
+import { getPublicVideoUrl } from "../../uitls/getPublicImageUrl";
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
   isLoading: boolean;
-  onTimestampClick?: (timestamp: number) => void;
+  onTimestampClick?: (timestamp: number, videoPath?: string) => void;
   onFeedback?: (
     messageId: string,
     feedback: "positive" | "negative",
@@ -161,6 +162,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setFeedbackModal({ isOpen: false, messageId: "" });
   };
 
+  const handleTimestampClick = (message: ChatMessage) => {
+    if (message.videoTimestamp !== undefined && onTimestampClick) {
+      const videoPath = message.videoPath ? getPublicVideoUrl(message.videoPath) : undefined;
+      onTimestampClick(message.videoTimestamp, videoPath);
+    }
+  };
+
   return (
     <>
       <div className="flex h-96 flex-col overflow-hidden rounded-lg border bg-card">
@@ -224,9 +232,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={() =>
-                              onTimestampClick(message.videoTimestamp!)
-                            }
+                            onClick={() => handleTimestampClick(message)}
                             className="mt-2 inline-flex items-center space-x-1 rounded bg-primary/20 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/30"
                           >
                             <ExternalLink className="h-3 w-3" />
@@ -254,7 +260,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handlePositiveFeedback(message.type)}
+                            onClick={() => handlePositiveFeedback(message.id || `${index}`)}
                             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                               message.feedback === "positive"
                                 ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
@@ -268,7 +274,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handleNegativeFeedback(message.type)}
+                            onClick={() => handleNegativeFeedback(message.id || `${index}`)}
                             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                               message.feedback === "negative"
                                 ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
