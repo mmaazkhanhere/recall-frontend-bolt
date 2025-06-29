@@ -14,6 +14,7 @@ import {
 } from "../uitls/getPublicImageUrl";
 
 const KnowledgeBase: React.FC = () => {
+  const [isVoiceInput, setIsVoiceInput] = useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
   console.log("ID: ", id);
   const { data: knowledgeBase, isLoading, error } = fetchKnowledgeBase(id!);
@@ -70,6 +71,7 @@ const KnowledgeBase: React.FC = () => {
   }
 
   console.log(`Knowledge Base: ${knowledgeBase}`);
+  console.log("Is voice input: ", isVoiceInput);
 
   return (
     <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -130,6 +132,7 @@ const KnowledgeBase: React.FC = () => {
               isLoading={isChatLoading}
               onTimestampClick={handleTimestampClick}
               onFeedback={handleFeedback}
+              isVoiceInput={isVoiceInput}
             />
           </div>
 
@@ -137,6 +140,7 @@ const KnowledgeBase: React.FC = () => {
             onSubmit={sendMessage}
             disabled={isChatLoading}
             placeholder="Ask about this video..."
+            setIsVoiceInput={setIsVoiceInput}
           />
         </motion.div>
       </div>

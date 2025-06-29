@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import { motion } from "framer-motion";
 import { Send, Mic, MicOff, Loader2 } from "lucide-react";
 import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
@@ -7,12 +13,14 @@ interface QuestionInputProps {
   onSubmit: (question: string) => void;
   disabled?: boolean;
   placeholder?: string;
+  setIsVoiceInput: Dispatch<SetStateAction<boolean>>;
 }
 
 const QuestionInput: React.FC<QuestionInputProps> = ({
   onSubmit,
   disabled = false,
   placeholder = "Ask a question about the video...",
+  setIsVoiceInput,
 }) => {
   const [question, setQuestion] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -23,7 +31,8 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const elevenLabsClientRef = useRef<ElevenLabsClient | null>(null);
   const [error, setError] = useState<boolean>(false);
 
-  const apiKey = "";
+  //const apiKey = "";
+  const apiKey = "sk_667baab04117c3e8d96ca9e27be53aa0a1e680646b3cdf41";
 
   useEffect(() => {
     // Initialize ElevenLabs client
@@ -135,6 +144,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
       stopRecording();
     } else {
       startRecording();
+      setIsVoiceInput(true);
     }
   };
 

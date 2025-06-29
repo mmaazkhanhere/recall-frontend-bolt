@@ -13,6 +13,7 @@ interface ChatInterfaceProps {
     feedback: "positive" | "negative",
     comment?: string
   ) => void;
+  isVoiceInput: boolean;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
@@ -20,12 +21,106 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   isLoading,
   onTimestampClick,
   onFeedback,
+  isVoiceInput,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [feedbackModal, setFeedbackModal] = useState<{
     isOpen: boolean;
     messageId: string;
   }>({ isOpen: false, messageId: "" });
+
+  const audioRef = useRef<HTMLAudioElement>(new Audio());
+  const currentObjectUrlRef = useRef<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const lastSpokenMessageRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!isVoiceInput) return;
+
+    const lastMessage = messages[messages.length - 1];
+    if (
+      !lastMessage ||
+      lastMessage.type !== "assistant" ||
+      lastMessage.content === lastSpokenMessageRef.current
+    )
+      return;
+
+    speakText(lastMessage.content);
+    lastSpokenMessageRef.current = lastMessage.content;
+
+    return () => {
+      // Cleanup on unmount or dependency change
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, [messages, isVoiceInput]);
+
+  const speakText = async (text: string) => {
+    // Cancel any ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const apiKey = "sk_667baab04117c3e8d96ca9e27be53aa0a1e680646b3cdf41";
+
+    if (!apiKey) {
+      console.error("ElevenLabs API key is not set");
+      return;
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    try {
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream?optimize_streaming_latency=0`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "xi-api-key": apiKey,
+          },
+          body: JSON.stringify({
+            text: text,
+            model_id: "eleven_monolingual_v1",
+            voice_settings: {
+              stability: 0,
+              similarity_boost: 0,
+            },
+          }),
+          signal: abortController.signal,
+        }
+      );
+
+      if (!response.ok) throw new Error("TTS request failed");
+
+      const audioBlob = await response.blob();
+
+      // Clean up previous URL
+      if (currentObjectUrlRef.current) {
+        URL.revokeObjectURL(currentObjectUrlRef.current);
+      }
+
+      const objectUrl = URL.createObjectURL(audioBlob);
+      currentObjectUrlRef.current = objectUrl;
+
+      audioRef.current.src = objectUrl;
+      audioRef.current.play().catch((error) => {
+        console.error("Audio play failed:", error);
+      });
+    } catch (error: any) {
+      if (error.name !== "AbortError") {
+        console.error("TTS Error:", error);
+      }
+    } finally {
+      abortControllerRef.current = null;
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
