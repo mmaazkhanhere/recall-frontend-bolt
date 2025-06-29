@@ -1,9 +1,8 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, User, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Bot, User, ThumbsUp, ThumbsDown, Volume2, VolumeX } from "lucide-react";
 import { ChatMessage } from "../../types";
 import FeedbackModal from "./FeedbackModal";
-import { getPublicVideoUrl } from "../../uitls/getPublicImageUrl";
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
@@ -36,6 +35,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const currentObjectUrlRef = useRef<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastSpokenMessageRef = useRef<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentSpeakingMessageId, setCurrentSpeakingMessageId] = useState<string | null>(null);
+
+  const apiKey = "sk_667baab04117c3e8d96ca9e27be53aa0a1e680646b3cdf41";
 
   useEffect(() => {
     if (!isVoiceInput) return;
@@ -44,32 +47,24 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (
       !lastMessage ||
       lastMessage.type !== "assistant" ||
-      lastMessage.content === lastSpokenMessageRef.current
+      !lastMessage.content ||
+      lastMessage.content === lastSpokenMessageRef.current ||
+      lastMessage.id?.startsWith('loading-')
     )
       return;
 
-    speakText(lastMessage.content);
+    speakText(lastMessage.content, lastMessage.id || '');
     lastSpokenMessageRef.current = lastMessage.content;
 
     return () => {
       // Cleanup on unmount or dependency change
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
+      stopSpeaking();
     };
   }, [messages, isVoiceInput]);
 
-  const speakText = async (text: string) => {
+  const speakText = async (text: string, messageId: string) => {
     // Cancel any ongoing request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    const apiKey = "";
+    stopSpeaking();
 
     if (!apiKey) {
       console.error("ElevenLabs API key is not set");
@@ -78,10 +73,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
     const abortController = new AbortController();
     abortControllerRef.current = abortController;
+    setIsSpeaking(true);
+    setCurrentSpeakingMessageId(messageId);
 
     try {
       const response = await fetch(
-        `https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream?optimize_streaming_latency=0`,
+        `https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream`,
         {
           method: "POST",
           headers: {
@@ -92,15 +89,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             text: text,
             model_id: "eleven_monolingual_v1",
             voice_settings: {
-              stability: 0,
-              similarity_boost: 0,
+              stability: 0.5,
+              similarity_boost: 0.5,
+              style: 0.0,
+              use_speaker_boost: true,
             },
           }),
           signal: abortController.signal,
         }
       );
 
-      if (!response.ok) throw new Error("TTS request failed");
+      if (!response.ok) {
+        throw new Error(`TTS request failed: ${response.status} ${response.statusText}`);
+      }
 
       const audioBlob = await response.blob();
 
@@ -113,15 +114,52 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       currentObjectUrlRef.current = objectUrl;
 
       audioRef.current.src = objectUrl;
-      audioRef.current.play().catch((error) => {
-        console.error("Audio play failed:", error);
-      });
+      
+      // Add event listeners
+      audioRef.current.onended = () => {
+        setIsSpeaking(false);
+        setCurrentSpeakingMessageId(null);
+      };
+      
+      audioRef.current.onerror = () => {
+        setIsSpeaking(false);
+        setCurrentSpeakingMessageId(null);
+        console.error("Audio playback failed");
+      };
+
+      await audioRef.current.play();
     } catch (error: any) {
       if (error.name !== "AbortError") {
         console.error("TTS Error:", error);
       }
+      setIsSpeaking(false);
+      setCurrentSpeakingMessageId(null);
     } finally {
       abortControllerRef.current = null;
+    }
+  };
+
+  const stopSpeaking = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    if (currentObjectUrlRef.current) {
+      URL.revokeObjectURL(currentObjectUrlRef.current);
+      currentObjectUrlRef.current = null;
+    }
+    setIsSpeaking(false);
+    setCurrentSpeakingMessageId(null);
+  };
+
+  const handleManualSpeak = (text: string, messageId: string) => {
+    if (currentSpeakingMessageId === messageId && isSpeaking) {
+      stopSpeaking();
+    } else {
+      speakText(text, messageId);
     }
   };
 
@@ -169,9 +207,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       <div className="flex h-96 flex-col overflow-hidden rounded-lg border bg-card">
         {/* Header */}
         <div className="border-b bg-muted/50 px-4 py-2">
-          <h3 className="text-sm font-medium text-card-foreground">
-            AI Assistant
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium text-card-foreground">
+              AI Assistant
+            </h3>
+            {isVoiceInput && isSpeaking && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={stopSpeaking}
+                className="flex items-center space-x-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <VolumeX className="h-3 w-3" />
+                <span>Stop</span>
+              </motion.button>
+            )}
+          </div>
         </div>
 
         {/* Messages */}
@@ -221,16 +272,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     >
                       <p className="text-sm">{message.content}</p>
 
-                      <div className="mt-1 text-xs opacity-70">
-                        {new Date(message.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      <div className="mt-1 flex items-center justify-between">
+                        <div className="text-xs opacity-70">
+                          {new Date(message.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                        
+                        {/* Manual TTS Button for Assistant Messages */}
+                        {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && (
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleManualSpeak(message.content, message.id || `${index}`)}
+                            className={`ml-2 flex h-5 w-5 items-center justify-center rounded-full transition-colors ${
+                              currentSpeakingMessageId === (message.id || `${index}`) && isSpeaking
+                                ? "bg-primary/20 text-primary"
+                                : "text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted-foreground/10"
+                            }`}
+                            title={
+                              currentSpeakingMessageId === (message.id || `${index}`) && isSpeaking
+                                ? "Stop speaking"
+                                : "Read aloud"
+                            }
+                          >
+                            {currentSpeakingMessageId === (message.id || `${index}`) && isSpeaking ? (
+                              <VolumeX className="h-3 w-3" />
+                            ) : (
+                              <Volume2 className="h-3 w-3" />
+                            )}
+                          </motion.button>
+                        )}
                       </div>
                     </div>
 
                     {/* Feedback Buttons for Assistant Messages */}
-                    {message.type === "assistant" && onFeedback && message.content && (
+                    {message.type === "assistant" && onFeedback && message.content && !message.id?.startsWith('loading-') && (
                       <div className="flex items-center space-x-2 px-1">
                         <span className="text-xs text-muted-foreground">
                           Was this helpful?
