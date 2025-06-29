@@ -65,8 +65,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const startRecording = async () => {
     try {
       setError(null);
-      // Set voice input to true when starting recording
-      setIsVoiceInput(true);
       
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
@@ -106,6 +104,8 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
           
           if (text.trim()) {
             setQuestion(text);
+            // Set voice input to true ONLY when we have successful transcription
+            setIsVoiceInput(true);
             // Auto-submit the transcribed text
             setTimeout(() => {
               onSubmit(text.trim());
@@ -209,6 +209,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
     if (isListening) {
       stopRecording();
     } else {
+      // Don't set voice input here - only set it after successful transcription
       startRecording();
     }
   };
@@ -345,7 +346,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
                 <span>{error}</span>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

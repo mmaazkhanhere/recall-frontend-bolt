@@ -288,7 +288,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           onClick={() => handleTimestampClick(message.videoTimestamp!, message.videoPath)}
                           className="mt-2 inline-flex items-center space-x-1 rounded bg-primary/20 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/30"
                         >
-                          <span>Jump to {formatTime(message.videoTimestamp!)}</span>
+                          <span>Jump to answer at {formatTime(message.videoTimestamp!)}</span>
                         </motion.button>
                       )}
 
@@ -301,7 +301,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                         </div>
                         
                         {/* Manual TTS Button for Assistant Messages (only for text input) */}
-                        {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && (
+                        {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && !isVoiceInput && (
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
