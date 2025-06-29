@@ -110,17 +110,17 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
             setTimeout(() => {
               onSubmit(text.trim());
               setQuestion("");
+              // Reset voice input after submission
+              setTimeout(() => {
+                setIsVoiceInput(false);
+              }, 100);
             }, 500);
           } else {
             setError("No speech detected. Please try again.");
-            // Reset voice input if no speech detected
-            setIsVoiceInput(false);
           }
         } catch (error) {
           console.error("Transcription error:", error);
           setError("Failed to transcribe audio. Please try again.");
-          // Reset voice input on error
-          setIsVoiceInput(false);
         } finally {
           setIsTranscribing(false);
         }
@@ -130,7 +130,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
         console.error("MediaRecorder error:", event);
         setError("Recording failed. Please try again.");
         setIsListening(false);
-        setIsVoiceInput(false);
       };
 
       mediaRecorder.start(1000); // Collect data every second
@@ -139,7 +138,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
       console.error("Error accessing microphone:", error);
       setError("Microphone access denied. Please allow microphone access and try again.");
       setIsListening(false);
-      setIsVoiceInput(false);
     }
   };
 
@@ -217,7 +215,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (question.trim() && !disabled && !isTranscribing) {
-      // For text input, don't set voice input flag
+      // For text input, explicitly set voice input to false
       setIsVoiceInput(false);
       onSubmit(question.trim());
       setQuestion("");
@@ -228,6 +226,8 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuestion(e.target.value);
     setError(null);
+    // Clear voice input when user starts typing
+    setIsVoiceInput(false);
   };
 
   // Determine mic button state and styling
@@ -346,7 +346,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
                 <span>{error}</span>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
