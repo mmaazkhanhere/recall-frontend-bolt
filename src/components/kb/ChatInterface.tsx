@@ -8,6 +8,7 @@ import { getPublicVideoUrl } from "../../uitls/getPublicImageUrl";
 interface ChatInterfaceProps {
   messages: ChatMessage[];
   isLoading: boolean;
+  streamingResponse?: string;
   onTimestampClick?: (timestamp: number, videoPath?: string) => void;
   onFeedback?: (
     messageId: string,
@@ -20,6 +21,7 @@ interface ChatInterfaceProps {
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   isLoading,
+  streamingResponse,
   onTimestampClick,
   onFeedback,
   isVoiceInput,
@@ -60,20 +62,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       }
     };
   }, [messages, isVoiceInput]);
-
-  // Auto-load video when assistant message with timestamp/video path is received
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    if (
-      lastMessage &&
-      lastMessage.type === "assistant" &&
-      lastMessage.videoTimestamp !== undefined &&
-      onTimestampClick
-    ) {
-      const videoPath = lastMessage.videoPath ? getPublicVideoUrl(lastMessage.videoPath) : undefined;
-      onTimestampClick(lastMessage.videoTimestamp, videoPath);
-    }
-  }, [messages, onTimestampClick]);
 
   const speakText = async (text: string) => {
     // Cancel any ongoing request
@@ -143,7 +131,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingResponse]);
 
   const formatTime = (timestamp: number): string => {
     const totalSeconds = Math.floor(timestamp);
@@ -191,7 +179,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div
-                key={index}
+                key={message.id || index}
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -242,7 +230,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     </div>
 
                     {/* Feedback Buttons for Assistant Messages */}
-                    {message.type === "assistant" && onFeedback && (
+                    {message.type === "assistant" && onFeedback && message.content && (
                       <div className="flex items-center space-x-2 px-1">
                         <span className="text-xs text-muted-foreground">
                           Was this helpful?
@@ -284,7 +272,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             ))}
           </AnimatePresence>
 
-          {/* Loading Indicator */}
+          {/* Loading Indicator with Streaming Response */}
           {isLoading && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -295,12 +283,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
                   <Bot className="h-4 w-4" />
                 </div>
-                <div className="rounded-lg bg-muted px-3 py-2">
-                  <div className="flex space-x-1">
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></div>
-                  </div>
+                <div className="rounded-lg bg-muted px-3 py-2 min-w-[120px]">
+                  {streamingResponse ? (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-muted-foreground">{streamingResponse}</span>
+                      <div className="flex space-x-1">
+                        <div className="h-1 w-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
+                        <div className="h-1 w-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
+                        <div className="h-1 w-1 animate-bounce rounded-full bg-muted-foreground"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex space-x-1">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

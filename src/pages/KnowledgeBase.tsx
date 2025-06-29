@@ -19,12 +19,20 @@ const KnowledgeBase: React.FC = () => {
   console.log("ID: ", id);
   const { data: knowledgeBase, isLoading, error } = fetchKnowledgeBase(id!);
   const videoPlayerRef = useRef<VideoPlayerRef>(null);
+  
+  // Proactive video update callback
+  const handleProactiveVideoUpdate = (videoPath: string, timestamp: number) => {
+    const publicVideoUrl = getPublicVideoUrl(videoPath);
+    videoPlayerRef.current?.changeVideo(publicVideoUrl, timestamp);
+  };
+
   const {
     messages,
     isLoading: isChatLoading,
+    streamingResponse,
     sendMessage,
     submitFeedback,
-  } = useChat(id);
+  } = useChat(id, handleProactiveVideoUpdate);
 
   const handleTimestampClick = (timestamp: number, videoPath?: string) => {
     if (videoPath) {
@@ -135,6 +143,7 @@ const KnowledgeBase: React.FC = () => {
             <ChatInterface
               messages={messages}
               isLoading={isChatLoading}
+              streamingResponse={streamingResponse}
               onTimestampClick={handleTimestampClick}
               onFeedback={handleFeedback}
               isVoiceInput={isVoiceInput}
