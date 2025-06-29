@@ -40,6 +40,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const apiKey = "sk_667baab04117c3e8d96ca9e27be53aa0a1e680646b3cdf41";
 
+  // Auto-play voice output only for voice input responses
   useEffect(() => {
     if (!isVoiceInput) return;
 
@@ -53,6 +54,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     )
       return;
 
+    // Only auto-play if this is a voice input session
     speakText(lastMessage.content, lastMessage.id || '');
     lastSpokenMessageRef.current = lastMessage.content;
 
@@ -202,6 +204,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     setFeedbackModal({ isOpen: false, messageId: "" });
   };
 
+  const handleTimestampClick = (timestamp: number, videoPath?: string) => {
+    if (onTimestampClick) {
+      onTimestampClick(timestamp, videoPath);
+    }
+  };
+
   return (
     <>
       <div className="flex h-96 flex-col overflow-hidden rounded-lg border bg-card">
@@ -211,7 +219,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             <h3 className="text-sm font-medium text-card-foreground">
               AI Assistant
             </h3>
-            {isVoiceInput && isSpeaking && (
+            {isSpeaking && (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -272,6 +280,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     >
                       <p className="text-sm">{message.content}</p>
 
+                      {/* Timestamp Link */}
+                      {message.videoTimestamp !== undefined && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handleTimestampClick(message.videoTimestamp!, message.videoPath)}
+                          className="mt-2 inline-flex items-center space-x-1 rounded bg-primary/20 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/30"
+                        >
+                          <span>Jump to {formatTime(message.videoTimestamp!)}</span>
+                        </motion.button>
+                      )}
+
                       <div className="mt-1 flex items-center justify-between">
                         <div className="text-xs opacity-70">
                           {new Date(message.timestamp).toLocaleTimeString([], {
@@ -280,7 +300,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           })}
                         </div>
                         
-                        {/* Manual TTS Button for Assistant Messages */}
+                        {/* Manual TTS Button for Assistant Messages (only for text input) */}
                         {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && (
                           <motion.button
                             whileHover={{ scale: 1.1 }}

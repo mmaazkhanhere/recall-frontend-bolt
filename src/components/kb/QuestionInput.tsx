@@ -65,6 +65,9 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const startRecording = async () => {
     try {
       setError(null);
+      // Set voice input to true when starting recording
+      setIsVoiceInput(true);
+      
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -110,13 +113,16 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
             }, 500);
           } else {
             setError("No speech detected. Please try again.");
+            // Reset voice input if no speech detected
+            setIsVoiceInput(false);
           }
         } catch (error) {
           console.error("Transcription error:", error);
           setError("Failed to transcribe audio. Please try again.");
+          // Reset voice input on error
+          setIsVoiceInput(false);
         } finally {
           setIsTranscribing(false);
-          setIsVoiceInput(false);
         }
       };
 
@@ -129,7 +135,6 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
 
       mediaRecorder.start(1000); // Collect data every second
       setIsListening(true);
-      setIsVoiceInput(true);
     } catch (error) {
       console.error("Error accessing microphone:", error);
       setError("Microphone access denied. Please allow microphone access and try again.");
@@ -211,6 +216,8 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (question.trim() && !disabled && !isTranscribing) {
+      // For text input, don't set voice input flag
+      setIsVoiceInput(false);
       onSubmit(question.trim());
       setQuestion("");
       setError(null);
@@ -221,6 +228,48 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
     setQuestion(e.target.value);
     setError(null);
   };
+
+  // Determine mic button state and styling
+  const getMicButtonState = () => {
+    if (isTranscribing) {
+      return {
+        className: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400",
+        icon: <Loader2 className="h-4 w-4 animate-spin" />,
+        disabled: true
+      };
+    }
+    
+    if (isListening) {
+      return {
+        className: "bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400",
+        icon: (
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          >
+            <Mic className="h-4 w-4" />
+          </motion.div>
+        ),
+        disabled: false
+      };
+    }
+    
+    if (error) {
+      return {
+        className: "bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400",
+        icon: <MicOff className="h-4 w-4" />,
+        disabled: false
+      };
+    }
+    
+    return {
+      className: "bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+      icon: <Mic className="h-4 w-4" />,
+      disabled: false
+    };
+  };
+
+  const micButtonState = getMicButtonState();
 
   return (
     <div className="space-y-2">
@@ -240,37 +289,19 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
             className="w-full rounded-lg border border-input bg-background px-4 py-2 pr-12 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50"
           />
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            type="button"
-            onClick={handleMicClick}
-            disabled={disabled}
-            className={`absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${
-              isListening
-                ? "bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400"
-                : isTranscribing
-                ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-                : error
-                ? "bg-orange-100 text-orange-600 hover:bg-orange-200 dark:bg-orange-900/30 dark:text-orange-400"
-                : "bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-            }`}
-          >
-            {isTranscribing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : isListening ? (
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <Mic className="h-4 w-4" />
-              </motion.div>
-            ) : error ? (
-              <MicOff className="h-4 w-4" />
-            ) : (
-              <Mic className="h-4 w-4" />
-            )}
-          </motion.button>
+          {/* Fixed size mic button container to prevent displacement */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center">
+            <motion.button
+              whileHover={!micButtonState.disabled ? { scale: 1.05 } : {}}
+              whileTap={!micButtonState.disabled ? { scale: 0.95 } : {}}
+              type="button"
+              onClick={handleMicClick}
+              disabled={disabled || micButtonState.disabled}
+              className={`flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50 ${micButtonState.className}`}
+            >
+              {micButtonState.icon}
+            </motion.button>
+          </div>
         </div>
 
         <motion.button
@@ -300,7 +331,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
                   transition={{ duration: 1, repeat: Infinity }}
                   className="w-2 h-2 bg-red-500 rounded-full"
                 />
-                <span>Recording... Release to stop and transcribe</span>
+                <span>Recording... Click mic again to stop and transcribe</span>
               </div>
             )}
             {isTranscribing && (
