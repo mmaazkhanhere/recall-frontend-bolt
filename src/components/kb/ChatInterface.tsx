@@ -66,7 +66,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       abortControllerRef.current.abort();
     }
 
-    const apiKey = "sk_667baab04117c3e8d96ca9e27be53aa0a1e680646b3cdf41";
+    const apiKey = "";
 
     if (!apiKey) {
       console.error("ElevenLabs API key is not set");

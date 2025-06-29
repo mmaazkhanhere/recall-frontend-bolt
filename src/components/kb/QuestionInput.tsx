@@ -32,7 +32,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
   const [error, setError] = useState<boolean>(false);
 
   //const apiKey = "";
-  const apiKey = "sk_667baab04117c3e8d96ca9e27be53aa0a1e680646b3cdf41";
+  const apiKey = "";
 
   useEffect(() => {
     // Initialize ElevenLabs client
