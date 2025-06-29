@@ -221,7 +221,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const handleTimestampClick = (timestamp: number, videoPath?: string) => {
-    console.log("Timestamp click:", timestamp, videoPath);
+    console.log("ChatInterface handleTimestampClick:", { timestamp, videoPath });
     if (onTimestampClick) {
       onTimestampClick(timestamp, videoPath);
     }
@@ -317,8 +317,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           })}
                         </div>
                         
-                        {/* Manual TTS Button for Assistant Messages (only show for text input) */}
-                        {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && !isVoiceInput && (
+                        {/* Manual TTS Button for Assistant Messages - Always show */}
+                        {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && (
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}

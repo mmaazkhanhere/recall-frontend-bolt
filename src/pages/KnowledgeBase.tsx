@@ -22,6 +22,7 @@ const KnowledgeBase: React.FC = () => {
   
   // Proactive video update callback
   const handleProactiveVideoUpdate = (videoPath: string, timestamp: number) => {
+    console.log("Proactive video update:", { videoPath, timestamp });
     const publicVideoUrl = getPublicVideoUrl(videoPath);
     videoPlayerRef.current?.changeVideo(publicVideoUrl, timestamp);
   };
@@ -35,11 +36,16 @@ const KnowledgeBase: React.FC = () => {
   } = useChat(id, handleProactiveVideoUpdate);
 
   const handleTimestampClick = (timestamp: number, videoPath?: string) => {
+    console.log("KnowledgeBase handleTimestampClick:", { timestamp, videoPath });
+    
     if (videoPath) {
       // If a new video path is provided, change the video and seek to timestamp
-      videoPlayerRef.current?.changeVideo(videoPath, timestamp);
+      const publicVideoUrl = getPublicVideoUrl(videoPath);
+      console.log("Changing video to:", publicVideoUrl, "and seeking to:", timestamp);
+      videoPlayerRef.current?.changeVideo(publicVideoUrl, timestamp);
     } else {
       // Otherwise, just seek to the timestamp in the current video
+      console.log("Seeking to timestamp:", timestamp);
       videoPlayerRef.current?.seekTo(timestamp);
     }
   };
