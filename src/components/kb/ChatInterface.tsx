@@ -42,17 +42,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   // Auto-play voice output only for voice input responses
   useEffect(() => {
-    if (!isVoiceInput) return;
+    console.log("Voice input effect triggered:", { isVoiceInput, messagesLength: messages.length });
+    
+    if (!isVoiceInput) {
+      console.log("Not voice input, skipping auto-play");
+      return;
+    }
 
     const lastMessage = messages[messages.length - 1];
+    console.log("Last message:", lastMessage);
+    
     if (
       !lastMessage ||
       lastMessage.type !== "assistant" ||
       !lastMessage.content ||
       lastMessage.content === lastSpokenMessageRef.current ||
       lastMessage.id?.startsWith('loading-')
-    )
+    ) {
+      console.log("Skipping auto-play:", {
+        hasMessage: !!lastMessage,
+        isAssistant: lastMessage?.type === "assistant",
+        hasContent: !!lastMessage?.content,
+        alreadySpoken: lastMessage?.content === lastSpokenMessageRef.current,
+        isLoading: lastMessage?.id?.startsWith('loading-')
+      });
       return;
+    }
 
     // Only auto-play if this is a voice input session AND the message is new
     console.log("Auto-playing TTS for voice input response:", lastMessage.content);
@@ -206,6 +221,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   };
 
   const handleTimestampClick = (timestamp: number, videoPath?: string) => {
+    console.log("Timestamp click:", timestamp, videoPath);
     if (onTimestampClick) {
       onTimestampClick(timestamp, videoPath);
     }
@@ -301,7 +317,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           })}
                         </div>
                         
-                        {/* Manual TTS Button for Assistant Messages (only for non-voice input) */}
+                        {/* Manual TTS Button for Assistant Messages (only show for text input) */}
                         {message.type === "assistant" && message.content && !message.id?.startsWith('loading-') && !isVoiceInput && (
                           <motion.button
                             whileHover={{ scale: 1.1 }}

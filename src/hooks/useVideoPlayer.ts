@@ -37,8 +37,9 @@ export const useVideoPlayer = () => {
   }, []);
 
   const seekTo = useCallback((time: number) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
+    if (videoRef.current && !isNaN(time) && isFinite(time)) {
+      console.log("Seeking to time:", time, "Duration:", videoRef.current.duration);
+      videoRef.current.currentTime = Math.max(0, Math.min(time, videoRef.current.duration || 0));
       setState(prev => ({ ...prev, currentTime: time }));
     }
   }, []);
@@ -87,6 +88,28 @@ export const useVideoPlayer = () => {
     }
   }, []);
 
+  const handleLoadedMetadata = useCallback(() => {
+    if (videoRef.current) {
+      setState(prev => ({
+        ...prev,
+        duration: videoRef.current!.duration || 0,
+      }));
+    }
+  }, []);
+
+  const handleDurationChange = useCallback(() => {
+    if (videoRef.current) {
+      setState(prev => ({
+        ...prev,
+        duration: videoRef.current!.duration || 0,
+      }));
+    }
+  }, []);
+
+  const handleEnded = useCallback(() => {
+    setState(prev => ({ ...prev, isPlaying: false }));
+  }, []);
+
   return {
     videoRef,
     state,
@@ -101,6 +124,9 @@ export const useVideoPlayer = () => {
     },
     handlers: {
       onTimeUpdate: handleTimeUpdate,
+      onLoadedMetadata: handleLoadedMetadata,
+      onDurationChange: handleDurationChange,
+      onEnded: handleEnded,
     },
   };
 };

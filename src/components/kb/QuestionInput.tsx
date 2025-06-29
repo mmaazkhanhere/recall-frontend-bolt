@@ -105,15 +105,12 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
           if (text.trim()) {
             setQuestion(text);
             // Set voice input to true ONLY when we have successful transcription
+            console.log("Setting voice input to true after successful transcription");
             setIsVoiceInput(true);
             // Auto-submit the transcribed text
             setTimeout(() => {
               onSubmit(text.trim());
               setQuestion("");
-              // Reset voice input after submission
-              setTimeout(() => {
-                setIsVoiceInput(false);
-              }, 100);
             }, 500);
           } else {
             setError("No speech detected. Please try again.");
@@ -216,6 +213,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
     e.preventDefault();
     if (question.trim() && !disabled && !isTranscribing) {
       // For text input, explicitly set voice input to false
+      console.log("Text input submitted, setting voice input to false");
       setIsVoiceInput(false);
       onSubmit(question.trim());
       setQuestion("");
@@ -227,7 +225,10 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
     setQuestion(e.target.value);
     setError(null);
     // Clear voice input when user starts typing
-    setIsVoiceInput(false);
+    if (e.target.value.length > 0) {
+      console.log("User typing, setting voice input to false");
+      setIsVoiceInput(false);
+    }
   };
 
   // Determine mic button state and styling
@@ -346,7 +347,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
                 <span>{error}</span>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
