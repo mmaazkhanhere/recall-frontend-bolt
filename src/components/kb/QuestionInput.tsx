@@ -347,7 +347,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
                 <span>{error}</span>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
