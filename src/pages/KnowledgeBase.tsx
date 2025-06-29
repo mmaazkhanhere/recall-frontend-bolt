@@ -39,14 +39,14 @@ const KnowledgeBase: React.FC = () => {
     console.log("KnowledgeBase handleTimestampClick:", { timestamp, videoPath });
     
     if (videoPath) {
-      // If a new video path is provided, change the video and seek to timestamp
+      // If a new video path is provided, change the video and seek to timestamp (will pause)
       const publicVideoUrl = getPublicVideoUrl(videoPath);
       console.log("Changing video to:", publicVideoUrl, "and seeking to:", timestamp);
       videoPlayerRef.current?.changeVideo(publicVideoUrl, timestamp);
     } else {
-      // Otherwise, just seek to the timestamp in the current video
-      console.log("Seeking to timestamp:", timestamp);
-      videoPlayerRef.current?.seekTo(timestamp);
+      // Otherwise, just seek to the timestamp in the current video (preserve play state)
+      console.log("Seeking to timestamp:", timestamp, "preserving play state");
+      videoPlayerRef.current?.seekTo(timestamp, true);
     }
   };
 

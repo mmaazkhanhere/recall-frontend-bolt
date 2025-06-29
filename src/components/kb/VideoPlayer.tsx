@@ -25,7 +25,7 @@ interface VideoPlayerProps {
 }
 
 export interface VideoPlayerRef {
-  seekTo: (time: number) => void;
+  seekTo: (time: number, shouldPreservePlayState?: boolean) => void;
   changeVideo: (newSrc: string, seekTime?: number) => void;
 }
 
@@ -34,9 +34,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const { videoRef, state, controls, handlers } = useVideoPlayer();
 
     useImperativeHandle(ref, () => ({
-      seekTo: (time: number) => {
-        console.log("VideoPlayer seekTo called with time:", time);
-        controls.seekTo(time);
+      seekTo: (time: number, shouldPreservePlayState: boolean = true) => {
+        console.log("VideoPlayer seekTo called with time:", time, "preserve play state:", shouldPreservePlayState);
+        controls.seekTo(time, shouldPreservePlayState);
       },
       changeVideo: (newSrc: string, seekTime?: number) => {
         console.log("VideoPlayer changeVideo called:", newSrc, seekTime);
@@ -47,8 +47,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           if (seekTime !== undefined) {
             // Wait for the video to load before seeking
             const handleLoadedData = () => {
-              console.log("Video loaded, seeking to:", seekTime);
-              controls.seekTo(seekTime);
+              console.log("Video loaded, seeking to:", seekTime, "and pausing");
+              // For new video loads, always pause (don't preserve play state)
+              controls.seekTo(seekTime, false);
               videoRef.current?.removeEventListener('loadeddata', handleLoadedData);
             };
             videoRef.current.addEventListener('loadeddata', handleLoadedData);
@@ -75,7 +76,8 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         const newTime = percent * state.duration;
         
         console.log("Progress bar clicked:", { percent, newTime, duration: state.duration });
-        controls.seekTo(newTime);
+        // For manual seeking via progress bar, preserve play state
+        controls.seekTo(newTime, true);
       },
       [state.duration, controls]
     );

@@ -36,11 +36,24 @@ export const useVideoPlayer = () => {
     }
   }, []);
 
-  const seekTo = useCallback((time: number) => {
+  const seekTo = useCallback((time: number, shouldPreservePlayState: boolean = true) => {
     if (videoRef.current && !isNaN(time) && isFinite(time)) {
-      console.log("Seeking to time:", time, "Duration:", videoRef.current.duration);
-      videoRef.current.currentTime = Math.max(0, Math.min(time, videoRef.current.duration || 0));
-      setState(prev => ({ ...prev, currentTime: time }));
+      console.log("Seeking to time:", time, "Duration:", videoRef.current.duration, "Preserve play state:", shouldPreservePlayState);
+      
+      const wasPlaying = !videoRef.current.paused;
+      const clampedTime = Math.max(0, Math.min(time, videoRef.current.duration || 0));
+      
+      videoRef.current.currentTime = clampedTime;
+      setState(prev => ({ ...prev, currentTime: clampedTime }));
+      
+      // If we should preserve play state and video was playing, resume playing
+      if (shouldPreservePlayState && wasPlaying) {
+        videoRef.current.play();
+      } else if (!shouldPreservePlayState) {
+        // If we shouldn't preserve play state, pause the video
+        videoRef.current.pause();
+        setState(prev => ({ ...prev, isPlaying: false }));
+      }
     }
   }, []);
 
