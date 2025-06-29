@@ -179,7 +179,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
           type="button"
           onClick={toggleVoiceInput}
           disabled={disabled || isTranscribing}
-          className={`absolute right-2 top-0 -translate-y-1/2 flex items-center justify-center rounded-md p-1.5 transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50
+          className={`absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-md transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50
           ${
             isListening && !error
               ? "bg-green-100 text-green-600 hover:bg-green-200"
@@ -187,10 +187,9 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
               ? "bg-red-100 text-red-600 hover:bg-red-200"
               : "bg-transparent text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           }`}
-          style={{ width: 36, height: 36 }} // fixed size to prevent displacement
         >
           {isTranscribing ? (
-            <Loader2 className="h-4 w-4" />
+            <Loader2 className="h-4 w-4 animate-spin" />
           ) : error ? (
             <MicOff className="h-4 w-4" />
           ) : isListening ? (
