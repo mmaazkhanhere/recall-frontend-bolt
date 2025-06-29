@@ -175,7 +175,7 @@ const QuestionInput: React.FC<QuestionInputProps> = ({
     const audioFile = new File([audioBlob], fileName, { type: audioBlob.type });
     
     formData.append('file', audioFile);
-    formData.append('model_id', 'whisper-1');
+    formData.append('model_id', 'scribe_v1');
 
     try {
       const response = await fetch('https://api.elevenlabs.io/v1/speech-to-text', {
