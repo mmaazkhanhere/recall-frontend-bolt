@@ -3,6 +3,7 @@ import React, {
   useMemo,
   forwardRef,
   useImperativeHandle,
+  useEffect,
 } from "react";
 
 import { motion } from "framer-motion";
@@ -23,103 +24,122 @@ interface VideoPlayerProps {
   poster: string;
 }
 
-const VideoPlayer = forwardRef(function VideoPlayer(
-  { src, title, onTimeUpdate, poster }: VideoPlayerProps,
-  ref
-) {
-  const { videoRef, state, controls, handlers } = useVideoPlayer();
+export interface VideoPlayerRef {
+  seekTo: (time: number) => void;
+  changeVideo: (newSrc: string, seekTime?: number) => void;
+}
 
-  useImperativeHandle(ref, () => ({
-    seekTo: controls.seekTo,
-  }));
+const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
+  function VideoPlayer({ src, title, onTimeUpdate, poster }, ref) {
+    const { videoRef, state, controls, handlers } = useVideoPlayer();
 
-  const formatTime = useCallback((seconds: number): string => {
-    if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
+    useImperativeHandle(ref, () => ({
+      seekTo: controls.seekTo,
+      changeVideo: (newSrc: string, seekTime?: number) => {
+        if (videoRef.current) {
+          videoRef.current.src = newSrc;
+          videoRef.current.load();
+          
+          if (seekTime !== undefined) {
+            // Wait for the video to load before seeking
+            const handleLoadedData = () => {
+              controls.seekTo(seekTime);
+              videoRef.current?.removeEventListener('loadeddata', handleLoadedData);
+            };
+            videoRef.current.addEventListener('loadeddata', handleLoadedData);
+          }
+        }
+      },
+    }));
 
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  }, []);
+    const formatTime = useCallback((seconds: number): string => {
+      if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
 
-  const handleSeekClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const percent = (e.clientX - rect.left) / rect.width;
-      const newTime = percent * state.duration;
-      controls.seekTo(newTime);
-    },
-    [state.duration, controls]
-  );
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins}:${secs.toString().padStart(2, "0")}`;
+    }, []);
 
-  React.useEffect(() => {
-    if (onTimeUpdate) {
-      onTimeUpdate(state.currentTime);
-    }
-  }, [state.currentTime, onTimeUpdate]);
+    const handleSeekClick = useCallback(
+      (e: React.MouseEvent<HTMLDivElement>) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const percent = (e.clientX - rect.left) / rect.width;
+        const newTime = percent * state.duration;
+        controls.seekTo(newTime);
+      },
+      [state.duration, controls]
+    );
 
-  // Memoize progress percentage to prevent unnecessary recalculations
-  const progressPercentage = useMemo(() => {
-    return state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
-  }, [state.currentTime, state.duration]);
+    React.useEffect(() => {
+      if (onTimeUpdate) {
+        onTimeUpdate(state.currentTime);
+      }
+    }, [state.currentTime, onTimeUpdate]);
 
-  // Memoize formatted time displays
-  const formattedCurrentTime = useMemo(
-    () => formatTime(state.currentTime),
-    [state.currentTime, formatTime]
-  );
-  const formattedDuration = useMemo(
-    () => formatTime(state.duration),
-    [state.duration, formatTime]
-  );
+    // Memoize progress percentage to prevent unnecessary recalculations
+    const progressPercentage = useMemo(() => {
+      return state.duration > 0 ? (state.currentTime / state.duration) * 100 : 0;
+    }, [state.currentTime, state.duration]);
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="relative overflow-hidden rounded-xl bg-black shadow-2xl"
-    >
-      {/* Video Element */}
-      <video
-        ref={videoRef}
-        src={src}
-        onTimeUpdate={handlers.onTimeUpdate}
-        onLoadedMetadata={handlers.onLoadedMetadata}
-        onDurationChange={handlers.onDurationChange}
-        onEnded={handlers.onEnded}
-        className="h-full w-full"
-        poster={poster}
+    // Memoize formatted time displays
+    const formattedCurrentTime = useMemo(
+      () => formatTime(state.currentTime),
+      [state.currentTime, formatTime]
+    );
+    const formattedDuration = useMemo(
+      () => formatTime(state.duration),
+      [state.duration, formatTime]
+    );
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="relative overflow-hidden rounded-xl bg-black shadow-2xl"
       >
-        <track kind="captions" src="" srcLang="en" label="English" />
-      </video>
+        {/* Video Element */}
+        <video
+          ref={videoRef}
+          src={src}
+          onTimeUpdate={handlers.onTimeUpdate}
+          onLoadedMetadata={handlers.onLoadedMetadata}
+          onDurationChange={handlers.onDurationChange}
+          onEnded={handlers.onEnded}
+          className="h-full w-full"
+          poster={poster}
+        >
+          <track kind="captions" src="" srcLang="en" label="English" />
+        </video>
 
-      {/* Controls Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity hover:opacity-100">
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          {/* Progress Bar - Memoized to prevent unnecessary updates */}
-          <ProgressBar
-            progressPercentage={progressPercentage}
-            onSeek={handleSeekClick}
-          />
+        {/* Controls Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity hover:opacity-100">
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            {/* Progress Bar - Memoized to prevent unnecessary updates */}
+            <ProgressBar
+              progressPercentage={progressPercentage}
+              onSeek={handleSeekClick}
+            />
 
-          {/* Control Buttons */}
-          <ControlButtons
-            state={state}
-            controls={controls}
-            formattedCurrentTime={formattedCurrentTime}
-            formattedDuration={formattedDuration}
-          />
+            {/* Control Buttons */}
+            <ControlButtons
+              state={state}
+              controls={controls}
+              formattedCurrentTime={formattedCurrentTime}
+              formattedDuration={formattedDuration}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Title Overlay */}
-      <div className="absolute left-4 top-4">
-        <h3 className="text-lg font-semibold text-white drop-shadow-lg">
-          {title}
-        </h3>
-      </div>
-    </motion.div>
-  );
-});
+        {/* Title Overlay */}
+        <div className="absolute left-4 top-4">
+          <h3 className="text-lg font-semibold text-white drop-shadow-lg">
+            {title}
+          </h3>
+        </div>
+      </motion.div>
+    );
+  }
+);
 
 // Memoized ProgressBar component
 const ProgressBar = React.memo(

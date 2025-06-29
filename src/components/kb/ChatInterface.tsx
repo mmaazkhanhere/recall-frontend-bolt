@@ -1,13 +1,15 @@
 import React, { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, User, ExternalLink, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Bot, User, ThumbsUp, ThumbsDown } from "lucide-react";
 import { ChatMessage } from "../../types";
 import FeedbackModal from "./FeedbackModal";
+import { getPublicVideoUrl } from "../../uitls/getPublicImageUrl";
 
 interface ChatInterfaceProps {
   messages: ChatMessage[];
   isLoading: boolean;
-  onTimestampClick?: (timestamp: number) => void;
+  streamingResponse?: string;
+  onTimestampClick?: (timestamp: number, videoPath?: string) => void;
   onFeedback?: (
     messageId: string,
     feedback: "positive" | "negative",
@@ -19,6 +21,7 @@ interface ChatInterfaceProps {
 const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   isLoading,
+  streamingResponse,
   onTimestampClick,
   onFeedback,
   isVoiceInput,
@@ -128,7 +131,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingResponse]);
 
   const formatTime = (timestamp: number): string => {
     const totalSeconds = Math.floor(timestamp);
@@ -176,7 +179,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           <AnimatePresence>
             {messages.map((message, index) => (
               <motion.div
-                key={index}
+                key={message.id || index}
                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -218,24 +221,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     >
                       <p className="text-sm">{message.content}</p>
 
-                      {/* Timestamp Link */}
-                      {message.videoTimestamp !== undefined &&
-                        onTimestampClick && (
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() =>
-                              onTimestampClick(message.videoTimestamp!)
-                            }
-                            className="mt-2 inline-flex items-center space-x-1 rounded bg-primary/20 px-2 py-1 text-xs font-medium text-primary hover:bg-primary/30"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            <span>
-                              Jump to {formatTime(message.videoTimestamp!)}
-                            </span>
-                          </motion.button>
-                        )}
-
                       <div className="mt-1 text-xs opacity-70">
                         {new Date(message.timestamp).toLocaleTimeString([], {
                           hour: "2-digit",
@@ -245,7 +230,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     </div>
 
                     {/* Feedback Buttons for Assistant Messages */}
-                    {message.type === "assistant" && onFeedback && (
+                    {message.type === "assistant" && onFeedback && message.content && (
                       <div className="flex items-center space-x-2 px-1">
                         <span className="text-xs text-muted-foreground">
                           Was this helpful?
@@ -254,7 +239,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handlePositiveFeedback(message.type)}
+                            onClick={() => handlePositiveFeedback(message.id || `${index}`)}
                             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                               message.feedback === "positive"
                                 ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400"
@@ -268,7 +253,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => handleNegativeFeedback(message.type)}
+                            onClick={() => handleNegativeFeedback(message.id || `${index}`)}
                             className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
                               message.feedback === "negative"
                                 ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400"
@@ -287,7 +272,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             ))}
           </AnimatePresence>
 
-          {/* Loading Indicator */}
+          {/* Loading Indicator with Streaming Response */}
           {isLoading && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -298,12 +283,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
                   <Bot className="h-4 w-4" />
                 </div>
-                <div className="rounded-lg bg-muted px-3 py-2">
-                  <div className="flex space-x-1">
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
-                    <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></div>
-                  </div>
+                <div className="rounded-lg bg-muted px-3 py-2 min-w-[120px]">
+                  {streamingResponse ? (
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm text-muted-foreground">{streamingResponse}</span>
+                      <div className="flex space-x-1">
+                        <div className="h-1 w-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
+                        <div className="h-1 w-1 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
+                        <div className="h-1 w-1 animate-bounce rounded-full bg-muted-foreground"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex space-x-1">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

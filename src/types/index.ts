@@ -37,10 +37,12 @@ export interface Video {
 }
 
 export interface ChatMessage {
+  id?: string;
   type: "user" | "assistant";
   content: string;
   timestamp: string;
   videoTimestamp?: number;
+  videoPath?: string; // Add video path to chat message
   feedback?: "positive" | "negative";
   feedbackComment?: string;
 }

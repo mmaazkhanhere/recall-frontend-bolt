@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react/dist/esm/icons";
 import { Link } from "react-router-dom";
 import { fetchKnowledgeBase } from "../hooks/useKnowledgeBase";
 import { useChat } from "../hooks/useChat";
-import VideoPlayer from "../components/kb/VideoPlayer";
+import VideoPlayer, { VideoPlayerRef } from "../components/kb/VideoPlayer";
 import ChatInterface from "../components/kb/ChatInterface";
 import QuestionInput from "../components/kb/QuestionInput";
 import {
@@ -18,16 +18,30 @@ const KnowledgeBase: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   console.log("ID: ", id);
   const { data: knowledgeBase, isLoading, error } = fetchKnowledgeBase(id!);
-  const videoPlayerRef = useRef<{ seekTo: (time: number) => void }>(null);
+  const videoPlayerRef = useRef<VideoPlayerRef>(null);
+  
+  // Proactive video update callback
+  const handleProactiveVideoUpdate = (videoPath: string, timestamp: number) => {
+    const publicVideoUrl = getPublicVideoUrl(videoPath);
+    videoPlayerRef.current?.changeVideo(publicVideoUrl, timestamp);
+  };
+
   const {
     messages,
     isLoading: isChatLoading,
+    streamingResponse,
     sendMessage,
     submitFeedback,
-  } = useChat(id);
+  } = useChat(id, handleProactiveVideoUpdate);
 
-  const handleTimestampClick = (timestamp: number) => {
-    videoPlayerRef.current?.seekTo(timestamp);
+  const handleTimestampClick = (timestamp: number, videoPath?: string) => {
+    if (videoPath) {
+      // If a new video path is provided, change the video and seek to timestamp
+      videoPlayerRef.current?.changeVideo(videoPath, timestamp);
+    } else {
+      // Otherwise, just seek to the timestamp in the current video
+      videoPlayerRef.current?.seekTo(timestamp);
+    }
   };
 
   const handleFeedback = (
@@ -111,7 +125,6 @@ const KnowledgeBase: React.FC = () => {
             ref={videoPlayerRef}
             src={getPublicVideoUrl(knowledgeBase.video_path)}
             title={knowledgeBase.title}
-            onTimeUpdate={handleTimestampClick}
             poster={getPublicImageUrl(knowledgeBase.image)}
           />
         </motion.div>
@@ -130,6 +143,7 @@ const KnowledgeBase: React.FC = () => {
             <ChatInterface
               messages={messages}
               isLoading={isChatLoading}
+              streamingResponse={streamingResponse}
               onTimestampClick={handleTimestampClick}
               onFeedback={handleFeedback}
               isVoiceInput={isVoiceInput}
