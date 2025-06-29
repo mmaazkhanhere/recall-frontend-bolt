@@ -25,7 +25,7 @@ interface VideoPlayerProps {
 }
 
 export interface VideoPlayerRef {
-  seekTo: (time: number) => void;
+  seekTo: (time: number, shouldPreservePlayState?: boolean) => void;
   changeVideo: (newSrc: string, seekTime?: number) => void;
 }
 
@@ -34,8 +34,12 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
     const { videoRef, state, controls, handlers } = useVideoPlayer();
 
     useImperativeHandle(ref, () => ({
-      seekTo: controls.seekTo,
+      seekTo: (time: number, shouldPreservePlayState: boolean = true) => {
+        console.log("VideoPlayer seekTo called with time:", time, "preserve play state:", shouldPreservePlayState);
+        controls.seekTo(time, shouldPreservePlayState);
+      },
       changeVideo: (newSrc: string, seekTime?: number) => {
+        console.log("VideoPlayer changeVideo called:", newSrc, seekTime);
         if (videoRef.current) {
           videoRef.current.src = newSrc;
           videoRef.current.load();
@@ -43,7 +47,9 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
           if (seekTime !== undefined) {
             // Wait for the video to load before seeking
             const handleLoadedData = () => {
-              controls.seekTo(seekTime);
+              console.log("Video loaded, seeking to:", seekTime, "and pausing");
+              // For new video loads, always pause (don't preserve play state)
+              controls.seekTo(seekTime, false);
               videoRef.current?.removeEventListener('loadeddata', handleLoadedData);
             };
             videoRef.current.addEventListener('loadeddata', handleLoadedData);
@@ -62,10 +68,16 @@ const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
 
     const handleSeekClick = useCallback(
       (e: React.MouseEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const rect = e.currentTarget.getBoundingClientRect();
         const percent = (e.clientX - rect.left) / rect.width;
         const newTime = percent * state.duration;
-        controls.seekTo(newTime);
+        
+        console.log("Progress bar clicked:", { percent, newTime, duration: state.duration });
+        // For manual seeking via progress bar, preserve play state
+        controls.seekTo(newTime, true);
       },
       [state.duration, controls]
     );
@@ -152,16 +164,16 @@ const ProgressBar = React.memo(
   }) => (
     <div className="mb-4">
       <div
-        className="group relative h-1 cursor-pointer rounded-full bg-white/30"
+        className="group relative h-2 cursor-pointer rounded-full bg-white/30 hover:h-3 transition-all"
         onClick={onSeek}
       >
         <div
-          className="h-full rounded-full bg-primary transition-all group-hover:h-1.5"
+          className="h-full rounded-full bg-primary transition-all pointer-events-none"
           style={{ width: `${progressPercentage}%` }}
         />
         <div
-          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 rounded-full bg-primary opacity-0 transition-opacity group-hover:opacity-100"
-          style={{ left: `${progressPercentage}%` }}
+          className="absolute top-1/2 h-4 w-4 -translate-y-1/2 rounded-full bg-primary opacity-0 transition-opacity group-hover:opacity-100 shadow-lg pointer-events-none"
+          style={{ left: `calc(${progressPercentage}% - 8px)` }}
         />
       </div>
     </div>
