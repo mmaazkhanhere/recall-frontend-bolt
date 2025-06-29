@@ -22,9 +22,11 @@ const Footer: React.FC = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://github.com/mmaazkhanhere/recall-frontend-bolt"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="GitHub"
+                aria-label="GitHub Repository"
               >
                 <Github className="h-5 w-5" />
               </a>
