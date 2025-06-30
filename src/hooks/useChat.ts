@@ -113,7 +113,13 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
       // Find the message to get the required data
       const message = messages.find(msg => msg.id === messageId);
       if (!message || message.type !== "assistant" || !message.originalQuery || !message.knowledgeBaseId) {
-        console.error("Cannot submit feedback: missing required message data");
+        console.error("Cannot submit feedback: missing required message data", {
+          messageFound: !!message,
+          isAssistant: message?.type === "assistant",
+          hasOriginalQuery: !!message?.originalQuery,
+          hasKnowledgeBaseId: !!message?.knowledgeBaseId,
+          message: message
+        });
         return;
       }
 
@@ -127,14 +133,20 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
       );
 
       try {
-        // Submit feedback to API
-        const result = await submitQueryFeedback({
-          knowledge_base_id: message.knowledgeBaseId,
+        // Prepare the feedback data with proper validation
+        const feedbackData = {
+          knowledge_base_id: String(message.knowledgeBaseId), // Ensure it's a string
           query: message.originalQuery,
           response: message.content,
           thumbs_up: feedback === "positive",
-          comments: comment,
-        });
+          // Only include comments if provided and not empty
+          ...(comment && comment.trim() && { comments: comment.trim() })
+        };
+
+        console.log('Submitting feedback with data:', feedbackData);
+
+        // Submit feedback to API
+        const result = await submitQueryFeedback(feedbackData);
 
         if (result.success) {
           console.log("Query feedback submitted successfully");
