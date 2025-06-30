@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { queryKnowledgeBase } from "./useKnowledgeBase";
+import { submitQueryFeedback } from "./useQueryFeedback";
 import { ChatMessage } from "../types";
 
 export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, timestamp: number) => void) => {
@@ -67,6 +68,9 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
         timestamp: new Date().toISOString(),
         videoTimestamp: response.start_time,
         videoPath: response.video_path,
+        // Store original query and knowledge base ID for feedback
+        originalQuery: content,
+        knowledgeBaseId: videoId,
       };
 
       // Replace loading message with actual response
@@ -101,32 +105,77 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
   }, [videoId, onVideoUpdate]);
 
   const submitFeedback = useCallback(
-    (
+    async (
       messageId: string,
       feedback: "positive" | "negative",
       comment?: string
     ) => {
+      // Find the message to get the required data
+      const message = messages.find(msg => msg.id === messageId);
+      if (!message || message.type !== "assistant" || !message.originalQuery || !message.knowledgeBaseId) {
+        console.error("Cannot submit feedback: missing required message data", {
+          messageFound: !!message,
+          isAssistant: message?.type === "assistant",
+          hasOriginalQuery: !!message?.originalQuery,
+          hasKnowledgeBaseId: !!message?.knowledgeBaseId,
+          message: message
+        });
+        return;
+      }
+
+      // Optimistically update UI
       setMessages((prev) =>
-        prev.map((message) =>
-          message.id === messageId
-            ? { ...message, feedback, feedbackComment: comment }
-            : message
+        prev.map((msg) =>
+          msg.id === messageId
+            ? { ...msg, feedback, feedbackComment: comment }
+            : msg
         )
       );
 
-      // Here you would typically send the feedback to your backend
-      console.log("Feedback submitted:", { messageId, feedback, comment });
+      try {
+        // Prepare the feedback data with proper validation
+        const feedbackData = {
+          knowledge_base_id: parseInt(message.knowledgeBaseId, 10), // Convert to integer
+          query: message.originalQuery,
+          response: message.content,
+          thumbs_up: feedback === "positive", // Required boolean field
+          // Only include comments if provided and not empty
+          ...(comment && comment.trim() && { comments: comment.trim() })
+        };
 
-      // You could also show a toast notification here
-      if (feedback === "positive") {
-        console.log("Thank you for your positive feedback!");
-      } else {
-        console.log(
-          "Thank you for your feedback. We'll use it to improve our responses."
+        // Validate the knowledge_base_id is a valid integer
+        if (isNaN(feedbackData.knowledge_base_id)) {
+          throw new Error(`Invalid knowledge base ID: ${message.knowledgeBaseId}`);
+        }
+
+        console.log('Submitting feedback with data:', feedbackData);
+
+        // Submit feedback to API
+        const result = await submitQueryFeedback(feedbackData);
+
+        if (result.success) {
+          console.log("Query feedback submitted successfully");
+          // Show success message (you could add a toast notification here)
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (error) {
+        console.error("Failed to submit query feedback:", error);
+        
+        // Revert UI changes on error
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId
+              ? { ...msg, feedback: undefined, feedbackComment: undefined }
+              : msg
+          )
         );
+        
+        // You could show an error toast here
+        alert("Failed to submit feedback. Please try again.");
       }
     },
-    []
+    [messages]
   );
 
   const clearChat = useCallback(() => {

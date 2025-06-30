@@ -42,9 +42,12 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   videoTimestamp?: number;
-  videoPath?: string; // Add video path to chat message
+  videoPath?: string;
   feedback?: "positive" | "negative";
   feedbackComment?: string;
+  // Add fields needed for query feedback
+  originalQuery?: string;
+  knowledgeBaseId?: string; // Keep as string for now, will convert to int when needed
 }
 
 export interface SearchFilters {
@@ -83,4 +86,18 @@ export interface Feedback {
   comment?: string;
   timestamp: string;
   userId?: string;
+}
+
+export interface QueryFeedbackData {
+  knowledge_base_id: number; // Changed to number (int)
+  query: string;
+  response: string;
+  thumbs_up: boolean; // Required boolean - corrected field name
+  comments?: string;
+}
+
+export interface QueryFeedbackResponse {
+  success: boolean;
+  message: string;
+  id?: string;
 }
