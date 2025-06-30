@@ -7,7 +7,7 @@ export interface FeedbackData {
   email?: string;
   rating: number;
   category: string;
-  feedback: string;
+  comments: string;
 }
 
 export interface FeedbackResponse {

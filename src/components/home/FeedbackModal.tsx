@@ -14,7 +14,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     email: '',
     rating: 0,
     category: '',
-    feedback: ''
+    comments: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -57,8 +57,8 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
     if (!formData.category.trim()) {
       return 'Please select a category';
     }
-    if (!formData.feedback.trim()) {
-      return 'Please provide your feedback';
+    if (!formData.comments.trim()) {
+      return 'Please provide your comments';
     }
     return null;
   };
@@ -83,7 +83,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
       const feedbackData: FeedbackData = {
         rating: formData.rating,
         category: formData.category,
-        feedback: formData.feedback,
+        comments: formData.comments,
         // Only include name and email if they have values
         ...(formData.name.trim() && { name: formData.name.trim() }),
         ...(formData.email.trim() && { email: formData.email.trim() }),
@@ -104,7 +104,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
             email: '',
             rating: 0,
             category: '',
-            feedback: ''
+            comments: ''
           });
           setSubmitStatus({ type: null, message: '' });
           onClose();
@@ -301,15 +301,15 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose }) => {
                 </select>
               </div>
 
-              {/* Main Feedback - Required */}
+              {/* Main Comments - Required */}
               <div>
-                <label htmlFor="feedback" className="block text-sm font-medium text-foreground mb-2">
-                  Your Feedback <span className="text-red-500">*</span>
+                <label htmlFor="comments" className="block text-sm font-medium text-foreground mb-2">
+                  Your Comments <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                  id="feedback"
-                  name="feedback"
-                  value={formData.feedback}
+                  id="comments"
+                  name="comments"
+                  value={formData.comments}
                   onChange={handleInputChange}
                   disabled={isSubmitting}
                   required
