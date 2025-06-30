@@ -42,9 +42,12 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   videoTimestamp?: number;
-  videoPath?: string; // Add video path to chat message
+  videoPath?: string;
   feedback?: "positive" | "negative";
   feedbackComment?: string;
+  // Add fields needed for query feedback
+  originalQuery?: string;
+  knowledgeBaseId?: string;
 }
 
 export interface SearchFilters {
