@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Video, Moon, Sun, Menu } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Video, Moon, Sun, Menu } from "lucide-react";
+import { useTheme } from "../../contexts/ThemeContext";
+import boltLogoBlack from "../../public/bolt_logo_black.png";
+import boltLogoWhite from "../../public/bolt_logo_white.png";
 
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -33,17 +35,17 @@ const Header: React.FC = () => {
           {/* Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {[
-              { path: '/', label: 'Home' },
-              { path: '/dashboard', label: 'Dashboard' },
-              { path: '/about', label: 'About' },
+              { path: "/", label: "Home" },
+              { path: "/dashboard", label: "Dashboard" },
+              { path: "/about", label: "About" },
             ].map(({ path, label }) => (
               <Link
                 key={path}
                 to={path}
                 className={`relative px-3 py-2 text-sm font-light transition-colors ${
                   isActive(path)
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {label}
@@ -68,14 +70,31 @@ const Header: React.FC = () => {
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
               className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background hover:bg-muted transition-colors"
-              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              aria-label={`Switch to ${
+                theme === "light" ? "dark" : "light"
+              } mode`}
             >
-              {theme === 'light' ? (
+              {theme === "light" ? (
                 <Moon className="h-4 w-4" />
               ) : (
                 <Sun className="h-4 w-4" />
               )}
             </motion.button>
+
+            {/* Fixed Bolt Logo */}
+            {theme === "light" ? (
+              <img
+                src={boltLogoBlack}
+                alt="Bolt Logo"
+                className="w-12 md:w-16 h-12 md:h-16"
+              />
+            ) : (
+              <img
+                src={boltLogoWhite}
+                alt="Bolt Logo"
+                className="w-12 md:w-16 h-12 md:h-16"
+              />
+            )}
 
             {/* Mobile Menu */}
             <motion.button
