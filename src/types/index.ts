@@ -87,3 +87,17 @@ export interface Feedback {
   timestamp: string;
   userId?: string;
 }
+
+export interface QueryFeedbackData {
+  knowledge_base_id: number; // Changed to number (int)
+  query: string;
+  response: string;
+  thumbs_up: boolean; // Required boolean - corrected field name
+  comments?: string;
+}
+
+export interface QueryFeedbackResponse {
+  success: boolean;
+  message: string;
+  id?: string;
+}
