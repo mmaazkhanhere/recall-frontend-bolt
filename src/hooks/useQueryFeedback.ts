@@ -6,7 +6,7 @@ export interface QueryFeedbackData {
   knowledge_base_id: number; // Changed to number (int)
   query: string;
   response: string;
-  thumbs_up: boolean; // Required boolean
+  thumps_up: boolean; // Required boolean - fixed field name
   comments?: string;
 }
 
@@ -25,7 +25,7 @@ export const submitQueryFeedback = async (feedbackData: QueryFeedbackData): Prom
       knowledge_base_id: parseInt(String(feedbackData.knowledge_base_id), 10),
       query: feedbackData.query,
       response: feedbackData.response,
-      thumbs_up: feedbackData.thumbs_up, // Required boolean field
+      thumps_up: feedbackData.thumps_up, // Required boolean field - fixed field name
       // Only include comments if it exists and is not empty
       ...(feedbackData.comments && feedbackData.comments.trim() && { comments: feedbackData.comments.trim() })
     };
@@ -35,8 +35,8 @@ export const submitQueryFeedback = async (feedbackData: QueryFeedbackData): Prom
       throw new Error('Invalid knowledge_base_id: must be a valid integer');
     }
     
-    if (typeof payload.thumbs_up !== 'boolean') {
-      throw new Error('Invalid thumbs_up: must be a boolean');
+    if (typeof payload.thumps_up !== 'boolean') {
+      throw new Error('Invalid thumps_up: must be a boolean');
     }
     
     if (!payload.query || !payload.response) {
