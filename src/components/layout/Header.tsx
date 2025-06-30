@@ -3,8 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Video, Moon, Sun, Menu } from "lucide-react";
 import { useTheme } from "../../contexts/ThemeContext";
-import boltLogoBlack from "../../public/bolt_logo_black.png";
-import boltLogoWhite from "../../public/bolt_logo_white.png";
 
 const Header: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
@@ -80,21 +78,6 @@ const Header: React.FC = () => {
                 <Sun className="h-4 w-4" />
               )}
             </motion.button>
-
-            {/* Fixed Bolt Logo */}
-            {theme === "light" ? (
-              <img
-                src={boltLogoBlack}
-                alt="Bolt Logo"
-                className="w-12 md:w-16 h-12 md:h-16"
-              />
-            ) : (
-              <img
-                src={boltLogoWhite}
-                alt="Bolt Logo"
-                className="w-12 md:w-16 h-12 md:h-16"
-              />
-            )}
 
             {/* Mobile Menu */}
             <motion.button

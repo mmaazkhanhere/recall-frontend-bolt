@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowRight, MessageSquare } from 'lucide-react';
-import FeedbackModal from './FeedbackModal';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowRight, MessageSquare } from "lucide-react";
+import FeedbackModal from "./FeedbackModal";
+import boltLogoWhite from "../../public/bolt_logo_white.png";
 
 const HeroSection: React.FC = () => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
@@ -14,24 +15,30 @@ const HeroSection: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black"></div>
         <div className="absolute inset-0 bg-gradient-to-tr from-gray-800/20 via-transparent to-gray-700/20"></div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-600/20 via-transparent to-transparent"></div>
-        
+
         {/* Animated gradient orbs */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-gray-600/30 to-gray-400/30 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-gray-500/20 to-gray-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-gray-500/20 to-gray-600/20 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+
         {/* Minimalist geometric elements */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Subtle grid pattern */}
           <div className="absolute inset-0 opacity-[0.03]">
-            <div className="h-full w-full" style={{
-              backgroundImage: `
+            <div
+              className="h-full w-full"
+              style={{
+                backgroundImage: `
                 linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
               `,
-              backgroundSize: '60px 60px'
-            }}></div>
+                backgroundSize: "60px 60px",
+              }}
+            ></div>
           </div>
-          
+
           {/* Minimal accent elements */}
           <div className="absolute top-1/4 right-1/4 w-px h-32 bg-white/20"></div>
           <div className="absolute bottom-1/3 left-1/5 w-24 h-px bg-white/20"></div>
@@ -47,23 +54,32 @@ const HeroSection: React.FC = () => {
               className="text-center"
             >
               {/* Badge */}
-              <div className="mb-8">
+              <div className="mb-8 flex items-center justify-center gap-8">
                 <div className="inline-flex items-center rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-medium text-white/90">
-                  AI-Powered Video Intelligence
+                  <span>AI-Powered Video Intelligence</span>
                 </div>
+                <a href="https://bolt.new/">
+                  <img
+                    src={boltLogoWhite}
+                    className="ml-2 h-16 md:h-28 w-16 md:w-28"
+                    alt="Bolt Logo"
+                  />
+                </a>
               </div>
 
               {/* Heading - Split into two lines with proper gradient handling */}
               <h1 className="mb-8 text-5xl font-light tracking-tight text-white sm:text-6xl lg:text-7xl xl:text-8xl">
-                <span className="block leading-tight">Transform Videos Into</span>
+                <span className="block leading-tight">
+                  Transform Videos Into
+                </span>
                 <span className="block font-normal leading-tight relative">
-                  <span 
+                  <span
                     className="bg-gradient-to-r from-gray-300 to-white bg-clip-text text-transparent"
-                    style={{ 
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      paddingBottom: '0.1em',
-                      display: 'inline-block'
+                    style={{
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      paddingBottom: "0.1em",
+                      display: "inline-block",
                     }}
                   >
                     Searchable Knowledge
@@ -73,8 +89,9 @@ const HeroSection: React.FC = () => {
 
               {/* Description */}
               <p className="mx-auto mb-12 max-w-2xl text-lg text-white/80 sm:text-xl font-light leading-relaxed">
-                Upload your videos and instantly create interactive knowledge bases. 
-                Ask questions, get precise answers, and navigate directly to relevant moments.
+                Upload your videos and instantly create interactive knowledge
+                bases. Ask questions, get precise answers, and navigate directly
+                to relevant moments.
               </p>
 
               {/* CTA Buttons */}
@@ -91,7 +108,7 @@ const HeroSection: React.FC = () => {
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </motion.div>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -108,9 +125,9 @@ const HeroSection: React.FC = () => {
       </section>
 
       {/* Feedback Modal */}
-      <FeedbackModal 
-        isOpen={isFeedbackModalOpen} 
-        onClose={() => setIsFeedbackModalOpen(false)} 
+      <FeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
       />
     </>
   );
