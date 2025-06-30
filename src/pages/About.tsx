@@ -220,42 +220,6 @@ const About: React.FC = () => {
           </div>
         </div>
       </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary to-secondary">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-white mb-4">
-              Join Our Mission
-            </h2>
-            <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-              Help us transform how the world searches and learns from video
-              content. We're always looking for talented individuals to join our
-              team.
-            </p>
-            <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center justify-center rounded-lg bg-white dark:bg-black dark:text-white px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-white/90"
-              >
-                View Open Positions
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center justify-center rounded-lg border border-white/20 bg-white/10 px-8 py-3 text-sm font-medium text-white transition-colors hover:bg-white/20"
-              >
-                Contact Us
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
     </div>
   );
 };
