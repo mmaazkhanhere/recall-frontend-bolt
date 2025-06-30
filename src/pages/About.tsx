@@ -1,56 +1,57 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Users, Target, Award, Heart } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Users, Target, Award, Heart } from "lucide-react";
+import arun from "../public/arun.jpg";
+import maaz from "../public/maaz.jpg";
+import unum from "../public/unum.jpg";
 
 const About: React.FC = () => {
   const team = [
     {
-      name: 'Sarah Johnson',
-      role: 'CEO & Co-founder',
-      image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300',
-      bio: 'Former AI researcher at Stanford with 10+ years in machine learning and natural language processing.'
+      name: "Unum Sarfraz",
+      role: "Engineering Manager at Aruba Networks (HPE)",
+      image: unum,
+      linkedIn: "https://www.linkedin.com/in/unumsarfraz/",
     },
     {
-      name: 'Michael Chen',
-      role: 'CTO & Co-founder',
-      image: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300',
-      bio: 'Ex-Google engineer specializing in large-scale video processing and search infrastructure.'
+      name: "Arunesh Mishra",
+      role: "AI Engineer, Senior Software Engineer at Google",
+      image: arun,
+      linkedIn: "https://www.linkedin.com/in/aruneshm/",
     },
     {
-      name: 'Emily Rodriguez',
-      role: 'Head of Product',
-      image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300',
-      bio: 'Product leader with expertise in enterprise software and user experience design.'
+      name: "Mian Maaz Ullah Khan",
+      role: "AI Engineer at Car Buddy Chat",
+      image: maaz,
+      linkedIn: "https://www.linkedin.com/in/mmaazukhan/",
     },
-    {
-      name: 'David Kim',
-      role: 'Head of Engineering',
-      image: 'https://images.pexels.com/photos/1040880/pexels-photo-1040880.jpeg?auto=compress&cs=tinysrgb&w=300',
-      bio: 'Full-stack engineer passionate about building scalable AI-powered applications.'
-    }
   ];
 
   const values = [
     {
       icon: Target,
-      title: 'Innovation First',
-      description: 'We push the boundaries of what\'s possible with AI and video technology to create breakthrough solutions.'
+      title: "Innovation First",
+      description:
+        "We push the boundaries of what's possible with AI and video technology to create breakthrough solutions.",
     },
     {
       icon: Users,
-      title: 'User-Centric',
-      description: 'Every decision we make is guided by our users\' needs and the value we can provide to their workflows.'
+      title: "User-Centric",
+      description:
+        "Every decision we make is guided by our users' needs and the value we can provide to their workflows.",
     },
     {
       icon: Award,
-      title: 'Excellence',
-      description: 'We maintain the highest standards in everything we do, from code quality to customer support.'
+      title: "Excellence",
+      description:
+        "We maintain the highest standards in everything we do, from code quality to customer support.",
     },
     {
       icon: Heart,
-      title: 'Transparency',
-      description: 'We believe in open communication, honest feedback, and building trust with our community.'
-    }
+      title: "Transparency",
+      description:
+        "We believe in open communication, honest feedback, and building trust with our community.",
+    },
   ];
 
   return (
@@ -67,8 +68,9 @@ const About: React.FC = () => {
               About VideoIndex
             </h1>
             <p className="text-lg text-muted-foreground sm:text-xl">
-              We're on a mission to make video content as searchable and accessible as text, 
-              empowering organizations to unlock the full potential of their video libraries.
+              We're on a mission to make video content as searchable and
+              accessible as text, empowering organizations to unlock the full
+              potential of their video libraries.
             </p>
           </motion.div>
         </div>
@@ -83,25 +85,31 @@ const About: React.FC = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-6">
+                Our Story
+              </h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  VideoIndex was born out of frustration with the inefficiency of searching through video content. 
-                  Our founders, both AI researchers and engineers, experienced firsthand the challenge of finding 
-                  specific information buried in hours of recorded meetings, training videos, and educational content.
+                  VideoIndex was born out of frustration with the inefficiency
+                  of searching through video content. Our founders, both AI
+                  researchers and engineers, experienced firsthand the challenge
+                  of finding specific information buried in hours of recorded
+                  meetings, training videos, and educational content.
                 </p>
                 <p>
-                  In 2023, we set out to solve this problem by combining advanced AI technologies with 
-                  intuitive user interfaces. Our goal was simple: make video content as searchable and 
+                  In 2025, we set out to solve this problem by combining
+                  advanced AI technologies with intuitive user interfaces. Our
+                  goal was simple: make video content as searchable and
                   interactive as reading a document.
                 </p>
                 <p>
-                  Today, VideoIndex helps thousands of organizations transform their video libraries into 
-                  intelligent, searchable knowledge bases that save time and unlock valuable insights.
+                  We are aiming to helps thousands of organizations transform
+                  their video libraries into intelligent, searchable knowledge
+                  bases that save time and unlock valuable insights for them.
                 </p>
               </div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -128,7 +136,9 @@ const About: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Our Values</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Our Values
+            </h2>
             <p className="text-lg text-muted-foreground">
               The principles that guide everything we do
             </p>
@@ -147,8 +157,12 @@ const About: React.FC = () => {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <value.icon className="h-8 w-8" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{value.title}</h3>
-                <p className="text-sm text-muted-foreground">{value.description}</p>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {value.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {value.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -164,13 +178,15 @@ const About: React.FC = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Meet Our Team</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              Meet Our Team
+            </h2>
             <p className="text-lg text-muted-foreground">
               The talented people behind VideoIndex
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 ">
             {team.map((member, index) => (
               <motion.div
                 key={member.name}
@@ -178,18 +194,27 @@ const About: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="text-center group"
+                className="flex flex-col items-center"
               >
-                <div className="relative mb-4 mx-auto w-32 h-32 overflow-hidden rounded-full">
+                <a
+                  href={member.linkedIn}
+                  className="relative mb-4 mx-auto overflow-hidden rounded-full"
+                >
                   <img
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                    className=" w-72 h-72 transition-transform group-hover:scale-110"
                   />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">{member.name}</h3>
-                <p className="text-sm text-primary font-medium mb-3">{member.role}</p>
-                <p className="text-sm text-muted-foreground">{member.bio}</p>
+                </a>
+                <a
+                  href={member.linkedIn}
+                  className="text-lg font-semibold text-foreground mb-1"
+                >
+                  {member.name}
+                </a>
+                <p className="text-sm text-primary font-medium mb-3">
+                  {member.role}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -204,16 +229,19 @@ const About: React.FC = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold text-white mb-4">Join Our Mission</h2>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Join Our Mission
+            </h2>
             <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-              Help us transform how the world searches and learns from video content. 
-              We're always looking for talented individuals to join our team.
+              Help us transform how the world searches and learns from video
+              content. We're always looking for talented individuals to join our
+              team.
             </p>
             <div className="flex flex-col space-y-4 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center justify-center rounded-lg bg-white px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-white/90"
+                className="inline-flex items-center justify-center rounded-lg bg-white dark:bg-black dark:text-white px-8 py-3 text-sm font-medium text-primary transition-colors hover:bg-white/90"
               >
                 View Open Positions
               </motion.button>
