@@ -18,11 +18,20 @@ export interface FeedbackResponse {
 
 export const submitFeedback = async (feedbackData: FeedbackData): Promise<FeedbackResponse> => {
   try {
+    console.log('Submitting feedback:', feedbackData);
+    
     const response = await axios.post(`${API_BASE_URL}/feedback`, feedbackData, {
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
       },
+      // Explicitly set the method to POST
+      method: 'POST',
+      // Add timeout
+      timeout: 10000,
     });
+
+    console.log('Feedback response:', response);
 
     if (response.status === 200 || response.status === 201) {
       return {
@@ -37,6 +46,22 @@ export const submitFeedback = async (feedbackData: FeedbackData): Promise<Feedba
     console.error('Error submitting feedback:', error);
     
     if (axios.isAxiosError(error)) {
+      // Handle specific CORS/OPTIONS errors
+      if (error.code === 'ERR_NETWORK' || error.message.includes('CORS')) {
+        return {
+          success: false,
+          message: 'Network error: Please check your connection and try again.',
+        };
+      }
+      
+      // Handle 405 Method Not Allowed specifically
+      if (error.response?.status === 405) {
+        return {
+          success: false,
+          message: 'Server configuration error: Method not allowed. Please contact support.',
+        };
+      }
+      
       const errorMessage = error.response?.data?.message || error.message;
       return {
         success: false,
