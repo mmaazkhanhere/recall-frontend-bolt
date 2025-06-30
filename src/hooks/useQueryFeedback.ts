@@ -3,10 +3,10 @@ import axios from 'axios';
 const API_BASE_URL = "https://api.videoindex.app";
 
 export interface QueryFeedbackData {
-  knowledge_base_id: string;
+  knowledge_base_id: number; // Changed to number (int)
   query: string;
   response: string;
-  thumbs_up: boolean;
+  thumbs_up: boolean; // Required boolean
   comments?: string;
 }
 
@@ -20,15 +20,28 @@ export const submitQueryFeedback = async (feedbackData: QueryFeedbackData): Prom
   try {
     console.log('Submitting query feedback:', feedbackData);
     
-    // Ensure knowledge_base_id is a string and not undefined
+    // Ensure knowledge_base_id is an integer
     const payload = {
-      knowledge_base_id: String(feedbackData.knowledge_base_id),
+      knowledge_base_id: parseInt(String(feedbackData.knowledge_base_id), 10),
       query: feedbackData.query,
       response: feedbackData.response,
-      thumbs_up: feedbackData.thumbs_up,
+      thumbs_up: feedbackData.thumbs_up, // Required boolean field
       // Only include comments if it exists and is not empty
       ...(feedbackData.comments && feedbackData.comments.trim() && { comments: feedbackData.comments.trim() })
     };
+    
+    // Validate required fields
+    if (isNaN(payload.knowledge_base_id)) {
+      throw new Error('Invalid knowledge_base_id: must be a valid integer');
+    }
+    
+    if (typeof payload.thumbs_up !== 'boolean') {
+      throw new Error('Invalid thumbs_up: must be a boolean');
+    }
+    
+    if (!payload.query || !payload.response) {
+      throw new Error('Query and response are required fields');
+    }
     
     console.log('Final payload being sent:', payload);
     

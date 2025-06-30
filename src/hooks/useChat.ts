@@ -135,13 +135,18 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
       try {
         // Prepare the feedback data with proper validation
         const feedbackData = {
-          knowledge_base_id: String(message.knowledgeBaseId), // Ensure it's a string
+          knowledge_base_id: parseInt(message.knowledgeBaseId, 10), // Convert to integer
           query: message.originalQuery,
           response: message.content,
-          thumbs_up: feedback === "positive",
+          thumbs_up: feedback === "positive", // Required boolean field
           // Only include comments if provided and not empty
           ...(comment && comment.trim() && { comments: comment.trim() })
         };
+
+        // Validate the knowledge_base_id is a valid integer
+        if (isNaN(feedbackData.knowledge_base_id)) {
+          throw new Error(`Invalid knowledge base ID: ${message.knowledgeBaseId}`);
+        }
 
         console.log('Submitting feedback with data:', feedbackData);
 

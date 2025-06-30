@@ -47,7 +47,7 @@ export interface ChatMessage {
   feedbackComment?: string;
   // Add fields needed for query feedback
   originalQuery?: string;
-  knowledgeBaseId?: string;
+  knowledgeBaseId?: string; // Keep as string for now, will convert to int when needed
 }
 
 export interface SearchFilters {
