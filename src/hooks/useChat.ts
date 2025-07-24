@@ -1,108 +1,155 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { queryKnowledgeBase } from "./useKnowledgeBase";
 import { submitQueryFeedback } from "./useQueryFeedback";
 import { ChatMessage } from "../types";
 
-export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, timestamp: number) => void) => {
+const API_BASE_URL = "https://api.videoindex.app";
+
+export const useChat = (
+  videoId?: string,
+  onVideoUpdate?: (videoPath: string, timestamp: number) => void
+) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [streamingResponse, setStreamingResponse] = useState<string>("");
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const sendMessage = useCallback(async (content: string) => {
-    const userMessage: ChatMessage = {
-      type: "user",
-      content,
-      timestamp: new Date().toISOString(),
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
     };
+  }, []);
 
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
-    setStreamingResponse("");
+  const sendMessage = useCallback(
+    async (content: string) => {
+      if (!videoId) return;
 
-    try {
-      // Start the API call
-      const responsePromise = queryKnowledgeBase(videoId!, content);
-      
-      // Immediately show loading state with streaming effect
+      // Cancel any ongoing request
+      abortControllerRef.current?.abort();
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
+      const userMessage: ChatMessage = {
+        type: "user",
+        content,
+        timestamp: new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+      setIsLoading(true);
+
       const loadingMessage: ChatMessage = {
         id: `loading-${Date.now()}`,
         type: "assistant",
         content: "",
         timestamp: new Date().toISOString(),
-      };
-      
-      setMessages((prev) => [...prev, loadingMessage]);
-
-      // Simulate streaming response for better UX
-      const streamingTexts = [
-        "Analyzing your question...",
-        "Searching through video content...",
-        "Finding relevant moments...",
-        "Preparing response..."
-      ];
-
-      let streamIndex = 0;
-      const streamInterval = setInterval(() => {
-        if (streamIndex < streamingTexts.length) {
-          setStreamingResponse(streamingTexts[streamIndex]);
-          streamIndex++;
-        }
-      }, 300);
-
-      // Wait for actual API response
-      const response = await responsePromise;
-      
-      // Clear streaming simulation
-      clearInterval(streamInterval);
-      setStreamingResponse("");
-
-      // Immediately update video if callback provided (proactive loading)
-      if (onVideoUpdate && response.video_path && response.start_time !== undefined) {
-        onVideoUpdate(response.video_path, response.start_time);
-      }
-
-      const assistantMessage: ChatMessage = {
-        id: `assistant-${Date.now()}`,
-        type: "assistant",
-        content: response.response,
-        timestamp: new Date().toISOString(),
-        videoTimestamp: response.start_time,
-        videoPath: response.video_path,
-        // Store original query and knowledge base ID for feedback
         originalQuery: content,
         knowledgeBaseId: videoId,
       };
 
-      // Replace loading message with actual response
-      setMessages((prev) => 
-        prev.map(msg => 
-          msg.id === loadingMessage.id ? assistantMessage : msg
-        )
-      );
+      setMessages((prev) => [...prev, loadingMessage]);
 
-    } catch (error) {
-      console.error("Error querying knowledge base:", error);
-      
-      // Clear any streaming state
-      setStreamingResponse("");
-      
-      // Add error message
-      const errorMessage: ChatMessage = {
-        id: `error-${Date.now()}`,
-        type: "assistant",
-        content: "I'm sorry, I encountered an error while processing your question. Please try again.",
-        timestamp: new Date().toISOString(),
-      };
-      
-      setMessages((prev) => 
-        prev.map(msg => 
-          msg.id?.startsWith('loading-') ? errorMessage : msg
-        )
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [videoId, onVideoUpdate]);
+      try {
+        const response = await fetch(`${API_BASE_URL}/query`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            knowledge_base_id: videoId,
+            query: content,
+            max_results: 5,
+          }),
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch data");
+        if (!response.body) throw new Error("No response body");
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedResponse = "";
+        let videoPath = "";
+        let startTime = 0;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (abortController.signal.aborted) return;
+
+          const chunk = decoder.decode(value);
+          const jsonObjects = chunk
+            .split("\n")
+            .filter((line) => line.trim() !== "")
+            .map((line) => {
+              try {
+                return JSON.parse(line);
+              } catch (e) {
+                console.error("Error parsing JSON chunk", e);
+                return null;
+              }
+            })
+            .filter(Boolean);
+
+          for (const data of jsonObjects) {
+            // Update video if needed (only once)
+            if (
+              onVideoUpdate &&
+              !videoPath &&
+              data.video_path &&
+              data.start_time !== undefined
+            ) {
+              videoPath = data.video_path;
+              startTime = data.start_time;
+              onVideoUpdate(videoPath, startTime);
+            }
+
+            // Accumulate response tokens
+            if (data.response) {
+              accumulatedResponse += data.response;
+            }
+
+            // Update assistant message
+            setMessages((prev) =>
+              prev.map((msg) =>
+                msg.id === loadingMessage.id
+                  ? {
+                      ...msg,
+                      content: accumulatedResponse,
+                      videoPath: videoPath || msg.videoPath,
+                      videoTimestamp: startTime || msg.videoTimestamp,
+                    }
+                  : msg
+              )
+            );
+          }
+        }
+      } catch (error) {
+        if (error.name === "AbortError") {
+          console.log("Request aborted");
+          return;
+        }
+
+        console.error("Error querying knowledge base:", error);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === loadingMessage.id
+              ? {
+                  ...msg,
+                  content:
+                    "I'm sorry, I encountered an error. Please try again.",
+                }
+              : msg
+          )
+        );
+      } finally {
+        if (!abortController.signal.aborted) {
+          setIsLoading(false);
+          abortControllerRef.current = null;
+        }
+      }
+    },
+    [videoId, onVideoUpdate]
+  );
 
   const submitFeedback = useCallback(
     async (
@@ -111,14 +158,19 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
       comment?: string
     ) => {
       // Find the message to get the required data
-      const message = messages.find(msg => msg.id === messageId);
-      if (!message || message.type !== "assistant" || !message.originalQuery || !message.knowledgeBaseId) {
+      const message = messages.find((msg) => msg.id === messageId);
+      if (
+        !message ||
+        message.type !== "assistant" ||
+        !message.originalQuery ||
+        !message.knowledgeBaseId
+      ) {
         console.error("Cannot submit feedback: missing required message data", {
           messageFound: !!message,
           isAssistant: message?.type === "assistant",
           hasOriginalQuery: !!message?.originalQuery,
           hasKnowledgeBaseId: !!message?.knowledgeBaseId,
-          message: message
+          message: message,
         });
         return;
       }
@@ -140,15 +192,17 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
           response: message.content,
           thumbs_up: feedback === "positive", // Required boolean field
           // Only include comments if provided and not empty
-          ...(comment && comment.trim() && { comments: comment.trim() })
+          ...(comment && comment.trim() && { comments: comment.trim() }),
         };
 
         // Validate the knowledge_base_id is a valid integer
         if (isNaN(feedbackData.knowledge_base_id)) {
-          throw new Error(`Invalid knowledge base ID: ${message.knowledgeBaseId}`);
+          throw new Error(
+            `Invalid knowledge base ID: ${message.knowledgeBaseId}`
+          );
         }
 
-        console.log('Submitting feedback with data:', feedbackData);
+        console.log("Submitting feedback with data:", feedbackData);
 
         // Submit feedback to API
         const result = await submitQueryFeedback(feedbackData);
@@ -161,7 +215,7 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
         }
       } catch (error) {
         console.error("Failed to submit query feedback:", error);
-        
+
         // Revert UI changes on error
         setMessages((prev) =>
           prev.map((msg) =>
@@ -170,7 +224,7 @@ export const useChat = (videoId?: string, onVideoUpdate?: (videoPath: string, ti
               : msg
           )
         );
-        
+
         // You could show an error toast here
         alert("Failed to submit feedback. Please try again.");
       }
